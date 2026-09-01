@@ -961,7 +961,7 @@ function camadaExec(){
 
   $("#ex-selo").textContent = `${nb(d.linhas)} registros de itens · ${nb(d.contratacoes)} contratações · base SIMPAS`;
   $("#ex-titulo").textContent =
-    `O estado contratou ${bilhoes(tot)} em ${ANO}. Cerca ${pc(fam.pct,1)} foi demanda por produtos industriais, e desses produtos, apenas ${pc(fam.pct_ba,1)} vem de fornecedores da Bahia.`;
+    `O estado contratou ${bilhoes(tot)} em ${ANO}. Cerca ${pc(ind5.pct,1)} foi demanda por produtos industriais, e desses produtos, apenas ${pc(ind5.pct_ba,1)} vem de fornecedores da Bahia.`;
   $("#ex-lead")?.remove();
 
   const indBa = ind5.valor * ind5.pct_ba / 100;
