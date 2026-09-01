@@ -17,13 +17,14 @@
 }
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--papel);color:var(--tinta);
+html{scroll-behavior:smooth;scroll-padding-top:var(--head-h,110px)}
+body{margin:0;background:var(--papel);color:var(--tinta);padding-top:var(--head-h,110px);
   font-family:"Inter",system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55;
   -webkit-font-smoothing:antialiased}
 
 /* ---------- barra de controles ---------- */
-header.top{position:sticky;top:0;z-index:60;background:var(--marinho-esc);border-bottom:1px solid rgba(255,255,255,.12)}
+header.top{position:fixed;top:0;right:0;left:0;z-index:100;background:var(--marinho-esc);border-bottom:1px solid rgba(255,255,255,.12);
+  box-shadow:0 4px 14px rgba(13,31,60,.25)}
 .top-in{max-width:1240px;margin:0 auto;padding:11px 16px;display:flex;flex-wrap:wrap;gap:14px;
   align-items:center;justify-content:space-between}
 .brand h1{margin:0;font:700 16px/1.2 "Poppins",sans-serif;color:#fff;letter-spacing:-.005em}
@@ -47,7 +48,7 @@ header.top{position:sticky;top:0;z-index:60;background:var(--marinho-esc);border
 .exec .marca em{font-style:normal;letter-spacing:.04em;text-transform:none;color:var(--tinta-3);font-weight:400;font-size:12px}
 .exec h2{font:700 clamp(29px,3.2vw,42px)/1.08 Poppins,sans-serif;margin:14px 0 14px;
   letter-spacing:-.018em;max-width:27ch;text-wrap:balance}
-.exec .lead{font:400 clamp(15.5px,1.4vw,17.5px)/1.55 Poppins,sans-serif;color:var(--tinta-2);max-width:66ch;margin:0}
+.exec .lead{font:400 clamp(15.5px,1.4vw,17.5px)/1.55 "Inter",sans-serif;color:var(--tinta-2);max-width:66ch;margin:0}
 .exec .numeros{display:grid;grid-template-columns:repeat(4,1fr);gap:34px;margin:34px 0 30px;
   padding:26px 0;border-top:1px solid var(--marinho);border-bottom:1px solid var(--linha)}
 .exec .numeros .v{display:block;font:700 clamp(28px,3vw,38px)/1 Poppins,sans-serif;color:var(--marinho);
@@ -63,7 +64,7 @@ header.top{position:sticky;top:0;z-index:60;background:var(--marinho-esc);border
   display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline}
 .exec .achados b{font:700 20px/1 Poppins,sans-serif;color:var(--marinho);font-variant-numeric:tabular-nums;white-space:nowrap}
 .exec .decisao{margin:26px 0 0;padding:18px 22px;background:#fff;border-left:3px solid var(--marinho);
-  font:400 15.5px/1.5 Poppins,sans-serif;color:var(--tinta)}
+  font:400 15.5px/1.5 "Inter",sans-serif;color:var(--tinta)}
 .exec .decisao b{font-weight:700}
 .exec .barra{fill:var(--marinho)}
 .exec .barra.op{fill:#cfd5df}
@@ -941,17 +942,6 @@ function orgao(n){
   return ORGAOS[limpo] || limpo;
 }
 
-const FRACOES = {2:"metade",3:"um terço",4:"um quarto",5:"um quinto",6:"um sexto",8:"um oitavo",10:"um décimo"};
-function fracao(pct){
-  let melhor = null;
-  for (const n in FRACOES){
-    const d = Math.abs(pct - 100/n);
-    if (!melhor || d < melhor[0]) melhor = [d, FRACOES[n]];
-  }
-  if (melhor[0] <= 0.8) return melhor[1];
-  if (melhor[0] <= 2.0) return "cerca de " + melhor[1];
-  return pc(pct,1);
-}
 const bilhoes = v => ("R$ " + (v/1e9).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " bilhões");
 
 function camadaExec(){
@@ -971,7 +961,7 @@ function camadaExec(){
 
   $("#ex-selo").textContent = `${nb(d.linhas)} registros de itens · ${nb(d.contratacoes)} contratações · base SIMPAS`;
   $("#ex-titulo").textContent =
-    `O estado contratou ${bilhoes(tot)} em ${ANO}. ${fracao(fam.pct).replace(/^./, c => c.toUpperCase())} foi demanda por produtos industriais, e ${pc(fam.pct_ba,1)} vem de fornecedores da Bahia.`;
+    `O estado contratou ${bilhoes(tot)} em ${ANO}. Cerca ${pc(fam.pct,1)} foi demanda por produtos industriais, e desses produtos, apenas ${pc(fam.pct_ba,1)} vem de fornecedores da Bahia.`;
   $("#ex-lead")?.remove();
 
   const indBa = ind5.valor * ind5.pct_ba / 100;
@@ -1533,9 +1523,20 @@ if (!BASE_BRUTA || !Object.keys(BASE_BRUTA).length) $("#btBase").style.display =
 $("#btPdf").addEventListener("click", () => window.print());
 $("#upd").innerHTML = (BASE_BRUTA && Object.keys(BASE_BRUTA).length
   ? "<b>Exportação.</b> O botão Exportar base CSV entrega os dados primários do SIMPAS do ano selecionado, sem tratamento, com CNPJ, CNAE fiscal e razão social do fornecedor. O botão Exportar resultados entrega os agregados exibidos no painel.<br>"
-  : "") + "<b>Elaboração.</b> Núcleo de Economia Industrial e Inovação, SENAI CIMATEC. Painel gerado a partir das extrações anuais do SIMPAS e do cadastro de CNPJ da Receita Federal.";
+  : "");
 fichas();
 render();
+
+(function(){
+  const h = document.querySelector("header.top");
+  const seta = () => {
+    const a = h.getBoundingClientRect().height;
+    document.documentElement.style.setProperty("--head-h", Math.round(a) + "px");
+  };
+  addEventListener("resize", seta);
+  addEventListener("load", seta);
+  seta();
+})();
 
 </script>
 
