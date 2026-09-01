@@ -1698,8 +1698,8 @@
 
 
         <!-- Tab 4: Perfil das compras públicas do Estado da Bahia (SIMPAS/SAEB) -->
-        <div id="tab-perfilba" class="tab-content" style="padding: 0; height: calc(1065vh - 200px); overflow: hidden;">
-            <iframe src="painel_perfil_compras_ba_2025_4.html"
+        <div id="tab-perfilba" class="tab-content" style="padding: 0; overflow: visible;">
+            <iframe id="perfilbaFrame" src="painel_perfil_compras_ba_2025_4.html"
                 style="width: 100%; height: 100%; border: none; display: block;"></iframe>
         </div>
 
@@ -3278,10 +3278,45 @@
             }
             // ADICIONE ESTA LINHA PARA PERFILBA
             if (tabName === 'perfilba') {
-                // Nada especial a fazer, apenas mostrar o iframe
                 console.log('Aba Perfil BA ativada');
+                document.body.classList.add('perfilba-modo');
+                setTimeout(fitPerfilba, 100);
+            } else {
+                document.body.classList.remove('perfilba-modo');
             }
         }
+
+        // Ajusta o iframe do perfil BA com a altura real do conteúdo (rolagem externa única)
+        function fitPerfilba() {
+            const frame = document.getElementById('perfilbaFrame');
+            const tab = document.getElementById('tab-perfilba');
+            if (!frame || !tab || !tab.classList.contains('active')) return;
+            if (frame.dataset.h) {
+                frame.style.height = frame.dataset.h + 'px';
+            } else {
+                const topo = tab.getBoundingClientRect().top + window.scrollY;
+                frame.style.height = Math.max(600, Math.round(window.innerHeight - topo)) + 'px';
+            }
+        }
+
+        // Recebe a altura real do painel
+        window.addEventListener('message', e => {
+            if (!e.data || e.data.tipo !== 'perfilba-altura') return;
+            const frame = document.getElementById('perfilbaFrame');
+            if (!frame) return;
+            frame.dataset.h = e.data.valor;
+            frame.style.height = e.data.valor + 'px';
+        });
+
+        // Reposiciona o header fixo do painel durante a rolagem externa
+        window.addEventListener('scroll', () => {
+            const frame = document.getElementById('perfilbaFrame');
+            if (!frame || !document.body.classList.contains('perfilba-modo') || !frame.contentWindow || !frame.dataset.h) return;
+            frame.contentWindow.postMessage({
+                tipo: 'perfilba-scroll',
+                topoFrame: frame.getBoundingClientRect().top
+            }, '*');
+        }, {passive: true});
 
         // Initialize based on URL hash
         function handleRouting() {
