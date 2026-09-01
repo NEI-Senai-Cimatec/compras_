@@ -506,7 +506,8 @@ header.top{position:sticky;top:0;z-index:60;background:var(--marinho-esc);border
       <span>NEI SENAI CIMATEC · Compras públicas</span>
       <em id="ex-selo"></em>
     </div>
-    <h2 id="ex-titulo"></h2>
+    <!--h2 id="ex-titulo"></h2--> 
+    <h2 id="ex-titulo">O estado contratou R$ 19,98 bilhões em 2025. Cerca de 5,2% foi de bens industriais, e 17% vem de fornecedores da Bahia.</h2>
     <p class="lead" id="ex-lead"></p>
     <div class="numeros" id="ex-numeros"></div>
     <div class="cols">
@@ -1167,7 +1168,7 @@ function camadaExec(){
   const alvo = fila[0];
 
   $("#ex-selo").textContent = `${nb(d.linhas)} registros de itens · ${nb(d.contratacoes)} contratações · base SIMPAS`;
-  $("#ex-titulo").textContent =
+  //$("#ex-titulo").textContent =
     `O estado contratou ${bilhoes(tot)} em ${ANO}. ${fracao(fam.pct).replace(/^./, c => c.toUpperCase())} foi demanda por produtos industriais, e ${pc(fam.pct_ba,1)} vem de fornecedores da Bahia.`;
   $("#ex-lead")?.remove();
 
