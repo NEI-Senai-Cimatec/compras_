@@ -104,9 +104,6 @@
             background: var(--bg-light);
             padding: 4px 4px 0 4px;
             border-radius: 8px 8px 0 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
 
         .tab-btn {
@@ -1135,8 +1132,10 @@
         <nav class="tab-navigation">
             <button class="tab-btn active" onclick="switchTab('panorama', this)">Panorama da indústria</button>
             <button class="tab-btn" onclick="switchTab('perfil', this)">Perfil das compras públicas</button>
-            <button class="tab-btn" onclick="switchTab('priorizacao', this)">Matriz de priorização das compras públicas</button>
-            <button class="tab-btn" onclick="switchTab('perfilba', this)">Perfil das compras públicas do Estado da Bahia</button>
+            <button class="tab-btn" onclick="switchTab('priorizacao', this)">Matriz de priorização das compras
+                públicas</button>
+            <button class="tab-btn" onclick="switchTab('perfilba', this)">Perfil das compras públicas do Estado da
+                Bahia</button>
         </nav>
 
         <!-- Content Area -->
@@ -1184,7 +1183,8 @@
                         <p>Em 2025, a composição econômica da Bahia foi impulsionada principalmente
                             pelos estabelecimentos do Serviços, Agricultura e
                             Comércio, que concentraram 91.1% do total de
-                            704.598 estabelecimentos no referido período. Esse total de estabelecimentos representa um aumento de 84% em relação a
+                            704.598 estabelecimentos no referido período. Esse total de estabelecimentos representa um
+                            aumento de 84% em relação a
                             cinco anos atrás (2020-2025).</p>
                         <p>Mas como esse crescimento se compara ao crescimento no Brasil?</p>
                     </div>
@@ -1277,18 +1277,31 @@
                         <table id="tabela-rais-estabelecimentos">
                             <thead>
                                 <tr>
-                                    <th rowspan="2" style="cursor: pointer;" onclick="ordenarTabelaRais(0)">Cod. <span id="sort-rais-0" class="sort-indicator inactive">⇅</span></th>
-                                    <th rowspan="2" style="cursor: pointer;" onclick="ordenarTabelaRais(1)">CNAE 2.0 Grupo - BAHIA <span id="sort-rais-1" class="sort-indicator inactive">⇅</span></th>
-                                    <th colspan="3" style="text-align: center; border-bottom: 1px solid var(--border-color);">Estabelecimentos</th>
-                                    <th colspan="3" style="text-align: center; border-bottom: 1px solid var(--border-color);">Vínculos Formais</th>
+                                    <th rowspan="2" style="cursor: pointer;" onclick="ordenarTabelaRais(0)">Cod. <span
+                                            id="sort-rais-0" class="sort-indicator inactive">⇅</span></th>
+                                    <th rowspan="2" style="cursor: pointer;" onclick="ordenarTabelaRais(1)">CNAE 2.0
+                                        Grupo - BAHIA <span id="sort-rais-1" class="sort-indicator inactive">⇅</span>
+                                    </th>
+                                    <th colspan="3"
+                                        style="text-align: center; border-bottom: 1px solid var(--border-color);">
+                                        Estabelecimentos</th>
+                                    <th colspan="3"
+                                        style="text-align: center; border-bottom: 1px solid var(--border-color);">
+                                        Vínculos Formais</th>
                                 </tr>
                                 <tr>
-                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(2)">2023 <span id="sort-rais-2" class="sort-indicator inactive">⇅</span></th>
-                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(3)">2025 <span id="sort-rais-3" class="sort-indicator inactive">⇅</span></th>
-                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(4)">Taxa de Crescimento (2023-2025) <span id="sort-rais-4" class="sort-indicator inactive">⇅</span></th>
-                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(5)">2023 <span id="sort-rais-5" class="sort-indicator inactive">⇅</span></th>
-                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(6)">2025 <span id="sort-rais-6" class="sort-indicator inactive">⇅</span></th>
-                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(7)">Taxa de Crescimento (2023-2025) <span id="sort-rais-7" class="sort-indicator inactive">⇅</span></th>
+                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(2)">2023 <span
+                                            id="sort-rais-2" class="sort-indicator inactive">⇅</span></th>
+                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(3)">2025 <span
+                                            id="sort-rais-3" class="sort-indicator inactive">⇅</span></th>
+                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(4)">Taxa de Crescimento
+                                        (2023-2025) <span id="sort-rais-4" class="sort-indicator inactive">⇅</span></th>
+                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(5)">2023 <span
+                                            id="sort-rais-5" class="sort-indicator inactive">⇅</span></th>
+                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(6)">2025 <span
+                                            id="sort-rais-6" class="sort-indicator inactive">⇅</span></th>
+                                    <th style="cursor: pointer;" onclick="ordenarTabelaRais(7)">Taxa de Crescimento
+                                        (2023-2025) <span id="sort-rais-7" class="sort-indicator inactive">⇅</span></th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-rais-estabelecimentos">
@@ -1301,8 +1314,10 @@
                     </div>
                     <div class="pagination">
                         <span id="rais-page-info">0 resultados</span>
-                        <button class="pagination-btn" id="rais-prev-btn" onclick="changeRaisPage(-1)" disabled>Anterior</button>
-                        <button class="pagination-btn" id="rais-next-btn" onclick="changeRaisPage(1)" disabled>Próximo</button>
+                        <button class="pagination-btn" id="rais-prev-btn" onclick="changeRaisPage(-1)"
+                            disabled>Anterior</button>
+                        <button class="pagination-btn" id="rais-next-btn" onclick="changeRaisPage(1)"
+                            disabled>Próximo</button>
                     </div>
                 </div>
             </div>
@@ -1355,7 +1370,7 @@
                 </div>
             </div>
 
-            <div class="fonte-panorama">Fonte: SEBRAE baseado na RAIS  
+            <div class="fonte-panorama">Fonte: SEBRAE baseado na RAIS
             </div>
         </div>
 
@@ -1401,8 +1416,8 @@
                     <h2>Estrutura das compras p&uacute;blicas na Bahia</h2>
                     <p>
                         Em 2025, as compras p&uacute;blicas na Bahia totalizaram R$ 3,09
-                            bilh&otilde;es. Os dez maiores setores concentraram 76% desse
-                        volume, liderados pela fabrica&ccedil;&atilde;o de produtos farmac&ecirc;uticos (R$ 886,1 mi) e 
+                        bilh&otilde;es. Os dez maiores setores concentraram 76% desse
+                        volume, liderados pela fabrica&ccedil;&atilde;o de produtos farmac&ecirc;uticos (R$ 886,1 mi) e
                         fabrica&ccedil;&atilde;o de autom&oacute;veis (R$ 506,3 mi).
                     </p>
                     <p><strong>Onde est&aacute; crescendo e caindo a compra p&uacute;blica?</strong></p>
@@ -1454,7 +1469,8 @@
                         Em 2025, 59,8% das compras p&uacute;blicas baianas foram atendidas por
                         fornecedores externos da Bahia (liderados por S&atilde;o Paulo, 43,3%).
                         38,7% (R$
-                        1,20 bi) ocorreram por fornecedores locais da Bahia: produtos farmac&ecirc;uticos e m&aacute;quinas
+                        1,20 bi) ocorreram por fornecedores locais da Bahia: produtos farmac&ecirc;uticos e
+                        m&aacute;quinas
                         e
                         equi pamentos lideraram.
                     </p>
@@ -1670,7 +1686,7 @@
                     style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
                     📄 Baixar: Matriz Priorização Setorial
                 </a>
-                
+
                 <div class="fonte"></div>
                 <a href="https://github.com/NEI-Senai-Cimatec/compras/raw/ddd83b0afcd0584c410cc826c036aa0b522e1286/docs/mapeamento_familia_cnae_simpas_.xlsx"
                     target="_blank" rel="noopener noreferrer"
@@ -1681,17 +1697,14 @@
         </div>
 
 
-	<!-- Tab 4: Perfil das compras públicas do Estado da Bahia (SIMPAS/SAEB) -->
-	<!--div id="tab-perfilba" class="tab-content">
-	    <iframe src="painel_perfil_compras_ba_2025_4.html" style="width: 100%; height: 1040vh; border: none; display: block;"></iframe>
-	</div -->
-	<div id="tab-perfilba" class="tab-content" style="padding: 0; height: calc(100vh - 140px); overflow: hidden;">
-    <iframe src="painel_perfil_compras_ba_2025_4.html" 
-            style="width: 100%; height: 100%; border: none; display: block;"></iframe>
-</div>
+        <!-- Tab 4: Perfil das compras públicas do Estado da Bahia (SIMPAS/SAEB) -->
+        <div id="tab-perfilba" class="tab-content" style="padding: 0; height: calc(1065vh - 200px); overflow: hidden;">
+            <iframe src="painel_perfil_compras_ba_2025_4.html"
+                style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+        </div>
 
 
-	
+
         <!--/div -->
 
         <!-- Footer -->
@@ -1710,7 +1723,8 @@
             <div class="footer-info">
                 <p>Núcleo de Economia Industrial | SENAI CIMATEC</p>
                 <p>Responsável técnico: Mabel Diz Marques Mota</p>
-                <p>Curador responsável: David Franco Regalado, Ítalo Ferreira da Silva e Yuri Conrado Dantas</p>
+                <p>Curador responsável: David Franco Regalado, Felipe Figueirôa, Ítalo Ferreira da Silva, Raphael Silva
+                    e Yuri Conrado Dantas</p>
                 <p>Contato: <a href="mailto:cimatec-ecoindustrial@fieb.org.br">cimatec-ecoindustrial@fieb.org.br</a></p>
             </div>
         </footer>
@@ -3222,25 +3236,25 @@
             // Remove active classes from all tab buttons and content areas
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
+
 
             // Set active states on the button and selected content tab
             if (element) {
                 element.classList.add('active');
             } else {
-            // Mapeamento mais seguro usando o ID da aba ou o texto do botão
-        const tabMap = {
-            'panorama': 'Panorama da indústria',
-            'perfil': 'Perfil das compras públicas',
-            'priorizacao': 'Matriz de priorização das compras públicas',
-            'perfilba': 'Perfil das compras públicas do Estado da Bahia'
-        };
-        const btnText = tabMap[tabName];
+                // Mapeamento mais seguro usando o ID da aba ou o texto do botão
+                const tabMap = {
+                    'panorama': 'Panorama da indústria',
+                    'perfil': 'Perfil das compras públicas',
+                    'priorizacao': 'Matriz de priorização das compras públicas',
+                    'perfilba': 'Perfil das compras públicas do Estado da Bahia'
+                };
+                const btnText = tabMap[tabName];
                 const btn = Array.from(document.querySelectorAll('.tab-btn'))
-                                    .find(b => b.textContent.trim() === btnText);
+                    .find(b => b.textContent.trim() === btnText);
                 if (btn) btn.classList.add('active');
             }
-            
+
 
             const targetContent = document.getElementById('tab-' + tabName);
             if (targetContent) {
@@ -3262,11 +3276,11 @@
             if (tabName === 'priorizacao') {
                 setTimeout(renderizarMatrizPriorizacao, 150);
             }
-                // ADICIONE ESTA LINHA PARA PERFILBA
-	    if (tabName === 'perfilba') {
-		// Nada especial a fazer, apenas mostrar o iframe
-		console.log('Aba Perfil BA ativada');
-	    }
+            // ADICIONE ESTA LINHA PARA PERFILBA
+            if (tabName === 'perfilba') {
+                // Nada especial a fazer, apenas mostrar o iframe
+                console.log('Aba Perfil BA ativada');
+            }
         }
 
         // Initialize based on URL hash
@@ -3278,7 +3292,7 @@
             else if (hash.includes('/priorizacao')) targetTab = 'priorizacao';
 
             const btn = Array.from(document.querySelectorAll('.tab-btn'))
-                .find(b => b.textContent.toLowerCase().includes(targetTab === 'panorama' ? 'panorama' : targetTab === 'perfil' ? 'perfil' : targetTab === 'perfilba' ? 'perfil das compras públicas do estado' :  'priorização'));
+                .find(b => b.textContent.toLowerCase().includes(targetTab === 'panorama' ? 'panorama' : targetTab === 'perfil' ? 'perfil' : targetTab === 'perfilba' ? 'perfil das compras públicas do estado' : 'priorização'));
 
             switchTab(targetTab, btn);
         }
@@ -3861,7 +3875,7 @@
                     const decoder = new TextDecoder('windows-1252');
                     const text = decoder.decode(buffer);
                     const rows = d3.dsvFormat(";").parseRows(text);
-                    
+
                     if (rows.length < 3) {
                         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">Nenhum dado encontrado.</td></tr>';
                         return;
@@ -3890,7 +3904,7 @@
                             vinc2023_txt: vinc2023Text,
                             vinc2025_txt: vinc2025Text,
                             vincCresc_txt: vincCrescText,
-                            
+
                             // parsed numeric values for sorting
                             est2023: parseBrInt(est2023Text),
                             est2025: parseBrInt(est2025Text),
@@ -3908,7 +3922,7 @@
                     }
 
                     raisDataRaw = dataRows;
-                    
+
                     // Ordena por Codigo ascendente por padrão
                     ordenarTabelaRaisSilencioso(0, 'asc');
                     renderizarTabelaRais();
@@ -3941,7 +3955,7 @@
         function renderizarTabelaRais() {
             const tbody = document.getElementById('tbody-rais-estabelecimentos');
             const total = raisDataRaw.length;
-            
+
             document.getElementById('rais-page-info').textContent = total === 0
                 ? '0 resultados'
                 : ((raisPage - 1) * raisPageSize + 1) + '-' + Math.min(raisPage * raisPageSize, total) + ' de ' + total;
@@ -4193,24 +4207,24 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-    backgroundColor: 'rgba(15, 23, 42, 0.92)',
-    titleFont: { size: 14, weight: '700' },
-    bodyFont: { size: 13 },
-    padding: 14,
-    cornerRadius: 8,
-    maxWidth: 350, // <-- aumenta a largura máxima
-    callbacks: {
-        label: function(context) {
-            const s = top[context.dataIndex];
-            return [
-                `${s.descricao}`,
-                `Valor: R$ ${formatarMoeda(s.v2025)}`,
-                `Compra de fornecedores externos: ${s.dep_2025.toFixed(1)}%`
-            ];
-        }
-    }
-}
-                        
+                            backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                            titleFont: { size: 14, weight: '700' },
+                            bodyFont: { size: 13 },
+                            padding: 14,
+                            cornerRadius: 8,
+                            maxWidth: 350, // <-- aumenta a largura máxima
+                            callbacks: {
+                                label: function (context) {
+                                    const s = top[context.dataIndex];
+                                    return [
+                                        `${s.descricao}`,
+                                        `Valor: R$ ${formatarMoeda(s.v2025)}`,
+                                        `Compra de fornecedores externos: ${s.dep_2025.toFixed(1)}%`
+                                    ];
+                                }
+                            }
+                        }
+
                     },
                     scales: {
                         x: {
@@ -4300,11 +4314,11 @@
                             x: {
                                 grid: { display: false },
                                 title: {
-                    display: true,
-                    text: 'Taxa de variação (2023-2025)',
-                    font: { size: 12, weight: 'normal' },
-                    color: '#1e293b'
-                }
+                                    display: true,
+                                    text: 'Taxa de variação (2023-2025)',
+                                    font: { size: 12, weight: 'normal' },
+                                    color: '#1e293b'
+                                }
                             },
                             y: {
                                 grid: { display: false },
@@ -4363,11 +4377,11 @@
                             x: {
                                 grid: { display: false },
                                 title: {
-                    display: true,
-                    text: 'Taxa de variação (2023-2025)',
-                    font: { size: 12, weight: 'normal' },
-                    color: '#1e293b'
-                }
+                                    display: true,
+                                    text: 'Taxa de variação (2023-2025)',
+                                    font: { size: 12, weight: 'normal' },
+                                    color: '#1e293b'
+                                }
                             },
                             y: {
                                 grid: { display: false },
