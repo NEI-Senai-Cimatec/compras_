@@ -1709,6 +1709,46 @@
     </div>
   </div>
 
+  <section class="exec" id="topo">
+    <div class="wrap">
+      <div class="marca">
+        <span>NEI SENAI CIMATEC · Compras públicas</span>
+        <em id="ex-selo"></em>
+      </div>
+      <!--h2 id="ex-titulo"></h2-->
+      <h2 id="ex-titulo">O estado contratou R$ 19,98 bilhões em 2025. Cerca de 5,2% foi de bens industriais, e 17% vem
+        de fornecedores da Bahia.</h2>
+      <p class="lead" id="ex-lead"></p>
+      <div class="numeros" id="ex-numeros"></div>
+      <div class="cols">
+        <div>
+          <h3 id="ex-h3a"></h3>
+          <p class="nota" id="ex-nota"></p>
+          <div id="ex-grafico"></div>
+        </div>
+        <div>
+          <h3>O que os dados mostram</h3>
+          <p class="nota">Três leituras que não aparecem nos totais agregados.</p>
+          <ul class="achados" id="ex-achados"></ul>
+        </div>
+      </div>
+      <p class="decisao" id="ex-decisao"></p>
+    </div>
+  </section>
+
+  <div class="ponte">
+    <div class="wrap">
+      <div class="caixa">
+        <div>
+          <h4>Base analítica</h4>
+          <p>Seis blocos com a metodologia completa, o recorte industrial nas duas classificações, todos os setores,
+            produtos e fornecedores, com filtros e exportação.</p>
+        </div>
+        <a href="#analitica">Ver análise detalhada</a>
+      </div>
+    </div>
+  </div>
+
   <section class="tec" id="analitica">
     <div class="wrap">
       <div class="kpis" id="kpis"></div>
@@ -1727,18 +1767,29 @@
               </div>
               <div id="ch-serie"></div>
             </div>
-            <div class="card">
-              <div class="ch-head">
-                <div>
-                  <h3>Composição por natureza do item</h3>
-                  <div class="sub">Participação de serviço e material no valor contratado</div>
-                </div><span class="info" tabindex="0">i<span class="pop" id="pop-natureza"></span></span>
+            <div class="grid">
+              <div class="stack">
+                <div class="card">
+                  <div class="ch-head">
+                    <div>
+                      <h3>Valor contratado por ano</h3>
+                      <div class="sub" id="sub1"></div>
+                    </div><span class="info" tabindex="0">i<span class="pop" id="pop-volume"></span></span>
+                  </div>
+                  <div id="ch-serie"></div>
+                </div>
+                <div class="card">
+                  <div class="ch-head">
+                    <div>
+                      <h3>Composição por natureza do item</h3>
+                      <div class="sub">Participação de serviço e material no valor contratado</div>
+                    </div><span class="info" tabindex="0">i<span class="pop" id="pop-natureza"></span></span>
+                  </div>
+                  <div id="ch-tipo"></div>
+                </div>
               </div>
-              <div id="ch-tipo"></div>
+              <div class="side" id="side1"></div>
             </div>
-          </div>
-          <div class="side" id="side1"></div>
-        </div>
       </section>
 
       <section class="block">
@@ -1994,7 +2045,6 @@
         <p id="upd"></p>
       </footer>
     </div>
-    </div>
   </section>
   <div id="tip"></div>
   <script>
@@ -2044,714 +2094,714 @@
     };
 
     /* ---------- colunas por ano ---------- */
-    function colunas(host, dados, opt) {
-      const W = 720, H = 260, ml = 8, mr = 8, mt = 34, mb = 40;
-      const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-      const max = Math.max(...dados.map(d => d.v)) * 1.2;
-      const iw = W - ml - mr, bw = Math.min(84, iw / dados.length - 26);
-      dados.forEach((d, i) => {
-        const cx = ml + iw * (i + 0.5) / dados.length;
-        const h = (d.v / max) * (H - mt - mb), y = H - mb - h;
-        const g = svgEl("g", { class: "mark" });
-        const r = svgEl("rect", { x: cx - bw / 2, y: y, width: bw, height: h, rx: 4, fill: d.cor || "var(--s1)" });
-        if (d.k === ANO) { r.setAttribute("stroke", "var(--ink)"); r.setAttribute("stroke-width", "1.5"); }
-        g.appendChild(r);
-        const t = svgEl("text", { x: cx, y: y - 8, "text-anchor": "middle", class: "vl" }); t.textContent = opt.fmt(d.v);
-        g.appendChild(t);
-        if (d.sub) {
-          const t2 = svgEl("text", {
-            x: cx, y: y - 23, "text-anchor": "middle", class: "vl",
-            fill: d.sub.startsWith("+") ? "var(--good)" : d.sub.startsWith("−") ? "var(--crit)" : "var(--ink-3)"
-          });
-          t2.textContent = d.sub; g.appendChild(t2);
-        }
-        const lb = svgEl("text", { x: cx, y: H - mb + 18, "text-anchor": "middle", class: "ax" }); lb.textContent = d.k;
-        g.appendChild(lb);
-        on(g, d.tip); s.appendChild(g);
-      });
-      s.appendChild(svgEl("line", { x1: ml, y1: H - mb, x2: W - mr, y2: H - mb, class: "gl" }));
-      host.innerHTML = ""; host.appendChild(s);
-    }
-
-    /* ---------- barras 100% empilhadas, anos em ordem decrescente ---------- */
-    function empilhado(host, series, legenda) {
-      const anos = ANOS_DESC, W = 720, rh = 34, gap = 12, ml = 44, mr = 8, mt = 4;
-      const H = mt + anos.length * (rh + gap);
-      const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-      anos.forEach((a, i) => {
-        const y = mt + i * (rh + gap);
-        const lb = svgEl("text", {
-          x: 0, y: y + rh / 2 + 4, class: "ax",
-          style: a === ANO ? "font-weight:700;fill:var(--ink)" : ""
-        }); lb.textContent = a; s.appendChild(lb);
-        let x = ml;
-        const tot = series[a].reduce((p, c) => p + c.pct, 0);
-        series[a].forEach((d, j) => {
-          const w = (d.pct / tot) * (W - ml - mr);
-          const g = svgEl("g", { class: "mark" });
-          g.appendChild(svgEl("rect", {
-            x: x, y: y, width: Math.max(0, w - 2), height: rh,
-            rx: (j === 0 || j === series[a].length - 1) ? 4 : 2, fill: d.cor, opacity: a === ANO ? 1 : .72
-          }));
-          if (w > 54) {
-            const t = svgEl("text", { x: x + 8, y: y + rh / 2 + 4, class: "vl", fill: "#fff" }); t.textContent = pc(d.pct, 1);
+        function colunas(host, dados, opt) {
+          const W = 720, H = 260, ml = 8, mr = 8, mt = 34, mb = 40;
+          const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+          const max = Math.max(...dados.map(d => d.v)) * 1.2;
+          const iw = W - ml - mr, bw = Math.min(84, iw / dados.length - 26);
+          dados.forEach((d, i) => {
+            const cx = ml + iw * (i + 0.5) / dados.length;
+            const h = (d.v / max) * (H - mt - mb), y = H - mb - h;
+            const g = svgEl("g", { class: "mark" });
+            const r = svgEl("rect", { x: cx - bw / 2, y: y, width: bw, height: h, rx: 4, fill: d.cor || "var(--s1)" });
+            if (d.k === ANO) { r.setAttribute("stroke", "var(--ink)"); r.setAttribute("stroke-width", "1.5"); }
+            g.appendChild(r);
+            const t = svgEl("text", { x: cx, y: y - 8, "text-anchor": "middle", class: "vl" }); t.textContent = opt.fmt(d.v);
             g.appendChild(t);
+            if (d.sub) {
+              const t2 = svgEl("text", {
+                x: cx, y: y - 23, "text-anchor": "middle", class: "vl",
+                fill: d.sub.startsWith("+") ? "var(--good)" : d.sub.startsWith("−") ? "var(--crit)" : "var(--ink-3)"
+              });
+              t2.textContent = d.sub; g.appendChild(t2);
+            }
+            const lb = svgEl("text", { x: cx, y: H - mb + 18, "text-anchor": "middle", class: "ax" }); lb.textContent = d.k;
+            g.appendChild(lb);
+            on(g, d.tip); s.appendChild(g);
+          });
+          s.appendChild(svgEl("line", { x1: ml, y1: H - mb, x2: W - mr, y2: H - mb, class: "gl" }));
+          host.innerHTML = ""; host.appendChild(s);
+        }
+
+        /* ---------- barras 100% empilhadas, anos em ordem decrescente ---------- */
+        function empilhado(host, series, legenda) {
+          const anos = ANOS_DESC, W = 720, rh = 34, gap = 12, ml = 44, mr = 8, mt = 4;
+          const H = mt + anos.length * (rh + gap);
+          const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+          anos.forEach((a, i) => {
+            const y = mt + i * (rh + gap);
+            const lb = svgEl("text", {
+              x: 0, y: y + rh / 2 + 4, class: "ax",
+              style: a === ANO ? "font-weight:700;fill:var(--ink)" : ""
+            }); lb.textContent = a; s.appendChild(lb);
+            let x = ml;
+            const tot = series[a].reduce((p, c) => p + c.pct, 0);
+            series[a].forEach((d, j) => {
+              const w = (d.pct / tot) * (W - ml - mr);
+              const g = svgEl("g", { class: "mark" });
+              g.appendChild(svgEl("rect", {
+                x: x, y: y, width: Math.max(0, w - 2), height: rh,
+                rx: (j === 0 || j === series[a].length - 1) ? 4 : 2, fill: d.cor, opacity: a === ANO ? 1 : .72
+              }));
+              if (w > 54) {
+                const t = svgEl("text", { x: x + 8, y: y + rh / 2 + 4, class: "vl", fill: "#fff" }); t.textContent = pc(d.pct, 1);
+                g.appendChild(t);
+              }
+              on(g, `<b>${a} · ${d.nome}</b><br>${cur(val(d.valor, a))}<br>${pc(d.pct, 2)} do total`);
+              s.appendChild(g); x += w;
+            });
+          });
+          host.innerHTML = ""; host.appendChild(s);
+          if (legenda) {
+            const l = document.createElement("div"); l.className = "legend";
+            l.innerHTML = legenda.map(d => `<span><i style="background:${d.cor}"></i>${d.nome}</span>`).join("");
+            host.appendChild(l);
           }
-          on(g, `<b>${a} · ${d.nome}</b><br>${cur(val(d.valor, a))}<br>${pc(d.pct, 2)} do total`);
-          s.appendChild(g); x += w;
-        });
-      });
-      host.innerHTML = ""; host.appendChild(s);
-      if (legenda) {
-        const l = document.createElement("div"); l.className = "legend";
-        l.innerHTML = legenda.map(d => `<span><i style="background:${d.cor}"></i>${d.nome}</span>`).join("");
-        host.appendChild(l);
-      }
-    }
-
-    /* ---------- barras horizontais ---------- */
-    function barras(host, dados, opt) {
-      const W = opt.W || 720, rh = opt.rh || 26, gap = 7, ml = opt.ml || 230, mr = 8;
-      const H = dados.length * (rh + gap);
-      const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-      const max = Math.max(...dados.map(d => d.v));
-      dados.forEach((d, i) => {
-        const y = i * (rh + gap);
-        const g = svgEl("g", { class: "mark" });
-        const lb = svgEl("text", { x: 0, y: y + rh / 2 + 4, class: "sl" });
-        const lim = opt.cut || 38;
-        lb.textContent = d.k.length > lim ? d.k.slice(0, lim - 1) + "…" : d.k;
-        g.appendChild(lb);
-        const w = (d.v / max) * (W - ml - mr - (opt.pad || 70));
-        g.appendChild(svgEl("rect", { x: ml, y: y + 3, width: Math.max(2, w), height: rh - 6, rx: 4, fill: d.cor || "var(--s1)" }));
-        const t = svgEl("text", { x: ml + w + 7, y: y + rh / 2 + 4, class: "vl" }); t.textContent = opt.fmt(d.v);
-        g.appendChild(t);
-        on(g, d.tip); s.appendChild(g);
-      });
-      host.innerHTML = ""; host.appendChild(s);
-    }
-
-    /* ---------- barras empilhadas horizontais, duas parcelas ---------- */
-    function empilhadoH(host, dados, opt, legenda) {
-      const W = opt.W || 720, rh = opt.rh || 26, gap = 7, ml = opt.ml || 230, mr = 8;
-      const H = dados.length * (rh + gap);
-      const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-      const defs = svgEl("defs", {});
-      const pat = svgEl("pattern", { id: "hatch", width: 6, height: 6, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
-      pat.appendChild(svgEl("rect", { width: 6, height: 6, fill: "var(--surface)" }));
-      pat.appendChild(svgEl("rect", { width: 3, height: 6, fill: "var(--s2)" }));
-      defs.appendChild(pat); s.appendChild(defs);
-      const max = Math.max(...dados.map(d => d.a + d.b));
-      dados.forEach((d, i) => {
-        const y = i * (rh + gap);
-        if (!opt.noLabel) {
-          const lb = svgEl("text", { x: 0, y: y + rh / 2 + 4, class: "sl" });
-          const lim = opt.cut || 38;
-          lb.textContent = d.k.length > lim ? d.k.slice(0, lim - 1) + "…" : d.k;
-          s.appendChild(lb);
         }
-        const esc = (W - ml - mr - (opt.pad || 70)) / max;
-        const wa = d.a * esc, wb = d.b * esc;
-        const g1 = svgEl("g", { class: "mark" });
-        g1.appendChild(svgEl("rect", { x: ml, y: y + 3, width: Math.max(1, wa - 1), height: rh - 6, rx: 4, fill: "var(--s1)" }));
-        on(g1, d.tipA); s.appendChild(g1);
-        const g2 = svgEl("g", { class: "mark" });
-        g2.appendChild(svgEl("rect", {
-          x: ml + wa, y: y + 3, width: Math.max(1, wb), height: rh - 6, rx: 4, fill: "url(#hatch)",
-          stroke: "var(--s2)", "stroke-width": 1
-        }));
-        on(g2, d.tipB); s.appendChild(g2);
-        const t = svgEl("text", { x: ml + wa + wb + 7, y: y + rh / 2 + 4, class: "vl" }); t.textContent = opt.fmt(d.a + d.b, d);
-        s.appendChild(t);
-      });
-      host.innerHTML = ""; host.appendChild(s);
-      const l = document.createElement("div"); l.className = "legend";
-      l.innerHTML = legenda.map(d => `<span><i style="${d.hatch
-        ? "background:repeating-linear-gradient(45deg,var(--s2) 0 3px,var(--surface) 3px 6px);border:1px solid var(--s2)"
-        : "background:" + d.cor}"></i>${d.nome}</span>`).join("");
-      host.appendChild(l);
-    }
 
-    /* ---------- barras agrupadas (duas séries em %) ---------- */
-    function agrupado(host, dados, legenda) {
-      const W = 720, rh = 40, gap = 10, ml = 176, mr = 8;
-      const H = dados.length * (rh + gap);
-      const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-      const max = Math.max(...dados.flatMap(d => [d.a, d.b]));
-      dados.forEach((d, i) => {
-        const y = i * (rh + gap);
-        const lb = svgEl("text", { x: 0, y: y + rh / 2 + 4, class: "sl" }); lb.textContent = d.k; s.appendChild(lb);
-        [[d.a, "var(--s1)", d.tipA], [d.b, "var(--s2)", d.tipB]].forEach((p, j) => {
-          const g = svgEl("g", { class: "mark" });
-          const w = (p[0] / max) * (W - ml - mr - 60);
-          g.appendChild(svgEl("rect", { x: ml, y: y + j * 17 + 2, width: Math.max(2, w), height: 14, rx: 4, fill: p[1] }));
-          const t = svgEl("text", { x: ml + w + 7, y: y + j * 17 + 13, class: "vl" }); t.textContent = pc(p[0], p[0] < 1 ? 2 : 1);
-          g.appendChild(t); on(g, p[2]); s.appendChild(g);
-        });
-      });
-      host.innerHTML = ""; host.appendChild(s);
-      const l = document.createElement("div"); l.className = "legend";
-      l.innerHTML = legenda.map(d => `<span><i style="background:${d.cor}"></i>${d.nome}</span>`).join("");
-      host.appendChild(l);
-    }
-
-    /* ---------- gráfico de rosca ---------- */
-    function rosca(host, partes, centro) {
-      const R = 70, r = 44, cx = 77, cy = 77;
-      const tot = partes.reduce((a, b) => a + b.v, 0) || 1;
-      const s = svgEl("svg", { viewBox: "0 0 154 154", role: "img" });
-      let ang = -Math.PI / 2;
-      partes.forEach(p => {
-        const frac = p.v / tot, da = frac * 2 * Math.PI, fim = ang + da;
-        const g = svgEl("g", { class: "mark" });
-        if (frac >= 0.9999) {
-          g.appendChild(svgEl("circle", { cx, cy, r: (R + r) / 2, fill: "none", stroke: p.cor, "stroke-width": R - r }));
-        } else {
-          const p1 = [cx + R * Math.cos(ang), cy + R * Math.sin(ang)], p2 = [cx + R * Math.cos(fim), cy + R * Math.sin(fim)];
-          const p3 = [cx + r * Math.cos(fim), cy + r * Math.sin(fim)], p4 = [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
-          const big = da > Math.PI ? 1 : 0;
-          g.appendChild(svgEl("path", {
-            d: `M${p1} A${R},${R} 0 ${big} 1 ${p2} L${p3} A${r},${r} 0 ${big} 0 ${p4} Z`,
-            fill: p.cor, stroke: "var(--surface)", "stroke-width": 2
-          }));
+        /* ---------- barras horizontais ---------- */
+        function barras(host, dados, opt) {
+          const W = opt.W || 720, rh = opt.rh || 26, gap = 7, ml = opt.ml || 230, mr = 8;
+          const H = dados.length * (rh + gap);
+          const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+          const max = Math.max(...dados.map(d => d.v));
+          dados.forEach((d, i) => {
+            const y = i * (rh + gap);
+            const g = svgEl("g", { class: "mark" });
+            const lb = svgEl("text", { x: 0, y: y + rh / 2 + 4, class: "sl" });
+            const lim = opt.cut || 38;
+            lb.textContent = d.k.length > lim ? d.k.slice(0, lim - 1) + "…" : d.k;
+            g.appendChild(lb);
+            const w = (d.v / max) * (W - ml - mr - (opt.pad || 70));
+            g.appendChild(svgEl("rect", { x: ml, y: y + 3, width: Math.max(2, w), height: rh - 6, rx: 4, fill: d.cor || "var(--s1)" }));
+            const t = svgEl("text", { x: ml + w + 7, y: y + rh / 2 + 4, class: "vl" }); t.textContent = opt.fmt(d.v);
+            g.appendChild(t);
+            on(g, d.tip); s.appendChild(g);
+          });
+          host.innerHTML = ""; host.appendChild(s);
         }
-        on(g, p.tip); s.appendChild(g); ang = fim;
-      });
-      const t1 = svgEl("text", {
-        x: cx, y: cy - 2, "text-anchor": "middle",
-        style: "font-family:'Poppins',sans-serif;font-size:20px;font-weight:600;fill:var(--ink)"
-      });
-      t1.textContent = centro[0]; s.appendChild(t1);
-      const t2 = svgEl("text", { x: cx, y: cy + 15, "text-anchor": "middle", style: "font-size:11px;fill:var(--ink-3)" });
-      t2.textContent = centro[1]; s.appendChild(t2);
-      host.innerHTML = "";
-      host.appendChild(s);
-      const l = document.createElement("div"); l.className = "dleg";
-      l.innerHTML = partes.map(p => `<div><i style="background:${p.cor}"></i><span>${p.nome}<br><b>${p.rot}</b> · ${pc(100 * p.v / tot, 1)}</span></div>`).join("");
-      host.appendChild(l);
-    }
 
-    /* ---------- faixa de cobertura da classificação ---------- */
-    function faixaCobertura(host, partes) {
-      const W = 720, H = 44, mr = 8;
-      const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-      let x = 0;
-      partes.forEach((p, j) => {
-        const w = (p.pct / 100) * (W - mr);
-        const g = svgEl("g", { class: "mark" });
-        g.appendChild(svgEl("rect", {
-          x: x, y: 0, width: Math.max(0, w - 2), height: 30,
-          rx: 4, fill: p.cor, stroke: p.vazio ? "var(--line)" : "none", "stroke-dasharray": p.vazio ? "4 3" : null
-        }));
-        if (w > 52) {
-          const t = svgEl("text", { x: x + 9, y: 20, class: "vl", fill: p.vazio ? "var(--ink-2)" : "#fff" });
-          t.textContent = pc(p.pct, 1); g.appendChild(t);
-        } else if (p.pct > 0) {
-          const t = svgEl("text", { x: x + w / 2, y: 43, class: "vl", "text-anchor": "middle", fill: p.cor });
-          t.textContent = pc(p.pct, 1); g.appendChild(t);
-          g.appendChild(svgEl("line", { x1: x + w / 2, y1: 31, x2: x + w / 2, y2: 34, stroke: p.cor, "stroke-width": 1.5 }));
+        /* ---------- barras empilhadas horizontais, duas parcelas ---------- */
+        function empilhadoH(host, dados, opt, legenda) {
+          const W = opt.W || 720, rh = opt.rh || 26, gap = 7, ml = opt.ml || 230, mr = 8;
+          const H = dados.length * (rh + gap);
+          const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+          const defs = svgEl("defs", {});
+          const pat = svgEl("pattern", { id: "hatch", width: 6, height: 6, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+          pat.appendChild(svgEl("rect", { width: 6, height: 6, fill: "var(--surface)" }));
+          pat.appendChild(svgEl("rect", { width: 3, height: 6, fill: "var(--s2)" }));
+          defs.appendChild(pat); s.appendChild(defs);
+          const max = Math.max(...dados.map(d => d.a + d.b));
+          dados.forEach((d, i) => {
+            const y = i * (rh + gap);
+            if (!opt.noLabel) {
+              const lb = svgEl("text", { x: 0, y: y + rh / 2 + 4, class: "sl" });
+              const lim = opt.cut || 38;
+              lb.textContent = d.k.length > lim ? d.k.slice(0, lim - 1) + "…" : d.k;
+              s.appendChild(lb);
+            }
+            const esc = (W - ml - mr - (opt.pad || 70)) / max;
+            const wa = d.a * esc, wb = d.b * esc;
+            const g1 = svgEl("g", { class: "mark" });
+            g1.appendChild(svgEl("rect", { x: ml, y: y + 3, width: Math.max(1, wa - 1), height: rh - 6, rx: 4, fill: "var(--s1)" }));
+            on(g1, d.tipA); s.appendChild(g1);
+            const g2 = svgEl("g", { class: "mark" });
+            g2.appendChild(svgEl("rect", {
+              x: ml + wa, y: y + 3, width: Math.max(1, wb), height: rh - 6, rx: 4, fill: "url(#hatch)",
+              stroke: "var(--s2)", "stroke-width": 1
+            }));
+            on(g2, d.tipB); s.appendChild(g2);
+            const t = svgEl("text", { x: ml + wa + wb + 7, y: y + rh / 2 + 4, class: "vl" }); t.textContent = opt.fmt(d.a + d.b, d);
+            s.appendChild(t);
+          });
+          host.innerHTML = ""; host.appendChild(s);
+          const l = document.createElement("div"); l.className = "legend";
+          l.innerHTML = legenda.map(d => `<span><i style="${d.hatch
+            ? "background:repeating-linear-gradient(45deg,var(--s2) 0 3px,var(--surface) 3px 6px);border:1px solid var(--s2)"
+            : "background:" + d.cor}"></i>${d.nome}</span>`).join("");
+          host.appendChild(l);
         }
-        on(g, p.tip); s.appendChild(g); x += w;
-      });
-      host.innerHTML = ""; host.appendChild(s);
-      const l = document.createElement("div"); l.className = "legend";
-      l.innerHTML = partes.map(p => `<span><i style="background:${p.vazio ? "transparent" : p.cor};${p.vazio ? "border:1px dashed var(--line)" : ""}"></i>${p.nome}</span>`).join("");
-      host.appendChild(l);
-    }
 
-    /* ---------- fichas metodológicas ---------- */
-    const FICHAS = {
-      "pop-volume": ["Valor contratado no ano",
-        "Soma do campo <code>VALOR TOTAL</code> de todos os itens registrados no SIMPAS com autorização emitida no ano.",
-        "Cada registro corresponde a um item de uma autorização de fornecimento de material (AFM) ou de prestação de serviço (APS).",
-        "A série oscila porque contratos plurianuais são registrados integralmente no ano de emissão. Comparações entre anos devem considerar essa característica.",
-        "Em valores reais, a série é deflacionada pelo IPCA para preços de dezembro de 2025."],
-      "pop-natureza": ["Natureza do item",
-        "Distribuição do valor contratado entre os campos <code>Material</code> e <code>Serviço</code> do SIMPAS.",
-        "Material corresponde a bens adquiridos por AFM. Serviço corresponde a contratações por APS.",
-        "A predominância de serviços reflete contratos continuados de terceirização, saúde e obras.",
-        "A natureza refere-se ao objeto contratado, não à atividade do fornecedor."],
-      "pop-local": ["Localização do fornecedor",
-        "Participação no valor contratado segundo o campo <code>UF FORNECEDOR</code>, que registra a unidade da federação de domicílio fiscal do contratado.",
-        "Bahia corresponde a UF igual a BA. Demais estados agregam as outras unidades.",
-        "O campo indica a sede do fornecedor, não a origem da produção. Uma distribuidora sediada na Bahia pode comercializar bem produzido fora do estado.",
-        "A compra estadual é centralizada, portanto o local de entrega não é usado como critério de origem."],
-      "pop-uf": ["Origem do gasto por unidade da federação",
-        "Valor contratado de fornecedores com sede em cada unidade da federação, no ano selecionado.",
-        "Cada quadrado representa um estado, posicionado de forma aproximada à geografia do país. A intensidade da cor segue quintis do valor contratado fora da Bahia.",
-        "Identifica para onde flui o gasto que não é atendido por fornecedores locais. A Bahia é destacada em cor própria por concentrar a maior parte do valor.",
-        "O cartograma preserva a leitura comparativa entre estados, mas não representa área nem contorno territorial."],
-      "pop-mod": ["Modalidade de contratação",
-        "Agrupamento das formas de contratação em três categorias, conforme o critério utilizado pela SAEB.",
-        "Licitação reúne licitação, licitação pela Lei 13.303/16, registro de preços, adesão a registro de preços e alteração de fornecedor. Contratação direta reúne dispensas, inexigibilidade, credenciamento, comparação de preço e seleções de consultoria. Outras formas reúnem termo aditivo, apostila e concurso.",
-        "O agrupamento foi validado contra o material oficial da SAEB de 2025 e reproduz os valores publicados.",
-        "Mede o grau de competição formal do gasto, não a sua eficiência."],
-      "pop-forma": ["Forma de contratação",
-        "Valor contratado por forma específica registrada no campo <code>FORMA DE CONTRATAÇÃO</code>.",
-        "Dez maiores formas no ano selecionado, em valor.",
-        "Registro de preços concentra o maior número de contratações, enquanto licitação e Lei 13.303/16 concentram o maior valor.",
-        "Termo aditivo e apostila são atos sobre contratos existentes, não novas contratações."],
-      "pop-faixa": ["Faixa de valor da contratação",
-        "Cada contratação é definida pelo documento de autorização (AFM ou APS). O valor da contratação é a soma dos seus itens.",
-        "As contratações são distribuídas em cinco faixas e comparadas em duas dimensões: participação no número de contratações e participação no valor.",
-        "A distância entre as duas barras mede a concentração financeira. Poucas contratações de grande porte respondem pela maior parte do gasto.",
-        "Indicador construído pelo NEI, não consta do material original da SAEB."],
-      "pop-conc": ["Concentração em fornecedores",
-        "Participação acumulada dos dez, cinquenta e cem maiores fornecedores no valor contratado do ano.",
-        "Fornecedores identificados por CNPJ. O índice HHI é a soma dos quadrados das participações percentuais individuais.",
-        "Quanto maior a participação acumulada, maior a dependência do estado de um conjunto restrito de contratados.",
-        "O HHI aqui calculado refere-se ao mercado de fornecimento ao estado, não ao mercado setorial."],
-      "pop-org": ["Órgãos com maior demanda",
-        "Valor contratado por secretaria ou órgão demandante, no ano selecionado.",
-        "Agregação pelo campo <code>SECRETARIA</code> do SIMPAS. São exibidos os oito maiores em valor.",
-        "Identifica onde a política de compras tem maior alavancagem: poucos órgãos concentram a maior parte da demanda do estado.",
-        "O órgão demandante não coincide necessariamente com a unidade licitante, em especial nas compras centralizadas por registro de preços."],
-      "pop-cob": ["O que este bloco cobre",
-        "Parcela do valor contratado que entra no recorte industrial, segundo a visão selecionada.",
-        "Na visão de bens industriais, a classificação parte do objeto contratado, pelo mapeamento do NEI de famílias do catálogo SIMPAS. Como o mapeamento alcança apenas itens de material, o resultado equivale, na prática, à divisão entre material e serviço da base SIMPAS. Na visão de indústrias fornecedoras, a classificação parte do CNAE fiscal principal do fornecedor no cadastro de CNPJ da Receita Federal e alcança todo o valor contratado.",
-        "A premissa original do NEI foi tratar material como demanda por bens industriais. O cruzamento com a atividade declarada do fornecedor mostra que parte relevante desse material é faturada por empresas de comércio, e não por fabricantes.",
-        "As duas visões medem coisas diferentes: uma classifica o que é comprado, a outra classifica quem vende. Os percentuais não são intercambiáveis."],
-      "pop-din": ["Dinâmica dos setores industriais",
-        "Variação do valor contratado de cada setor industrial entre 2021, ano-base fixo, e o ano selecionado.",
-        "Calculada como valor do ano dividido pelo valor de 2021, menos um. Entram apenas setores com pelo menos R$ 500 mil contratados em 2021, para evitar variações distorcidas por base pequena.",
-        "Identifica onde a demanda pública industrial está crescendo e onde está recuando. Um crescimento muito elevado costuma refletir aquisição pontual de grande porte, e não tendência.",
-        "Variações calculadas sobre valores nominais ou reais, conforme o seletor do topo. O valor de 2021 aparece no detalhe de cada barra."],
-      "pop-itens": ["Itens por porte do fornecedor",
-        "Contagem de itens distintos do catálogo SIMPAS, identificados pelo campo <code>CÓDIGO</code>.",
-        "Pequenos negócios reúnem microempresa, empresa de pequeno porte e microempreendedor individual. Cada item é atribuído ao porte que respondeu pelo maior valor contratado daquele item no ano.",
-        "Mede alcance da política de fomento em variedade de itens, não em valor.",
-        "A regra de atribuição exclusiva pode divergir em algumas dezenas de itens do material da SAEB, que adota critério próprio de desempate."],
-      "pop-peqorig": ["Origem dos pequenos negócios",
-        "Distribuição dos itens contratados de ME, EPP e MEI entre fornecedores sediados na Bahia e em outros estados.",
-        "Mesma regra de atribuição exclusiva do indicador anterior.",
-        "Mede se o benefício do tratamento diferenciado permanece na economia baiana.",
-        "Refere-se a itens, não a valor contratado."],
-      "pop-prod": ["Produtos contratados",
-        "Valor contratado por produto, identificado pelo campo <code>Nome Básico</code> do catálogo SIMPAS.",
-        "O nome básico agrega as especificações de um mesmo produto. Um nome básico pode reunir dezenas de códigos de item com especificações distintas.",
-        "A tabela lista todos os produtos do ano em ordem decrescente de valor. A busca filtra por qualquer trecho do nome e as colunas podem ser reordenadas.",
-        "Produtos com poucos registros e valor alto costumam corresponder a contratações únicas de grande porte."],
-      "pop-ind": ["Recorte industrial do valor contratado",
-        "Valor contratado dentro do recorte industrial, segundo a visão selecionada no bloco.",
-        "Na visão de bens industriais, a classificação parte do objeto contratado, pelo mapeamento do NEI de famílias do catálogo SIMPAS para a CNAE 2.0, restrito a itens de material. Na visão de indústrias fornecedoras, parte do CNAE fiscal principal do fornecedor no cadastro de CNPJ da Receita Federal. ",
-        "A diferença entre as duas visões mede quanto da demanda industrial do estado é atendida por intermediários comerciais e não por fabricantes.",
-        "O CNAE fiscal principal é declarado pela própria empresa como a atividade de maior receita auferida ou esperada. Não há verificação de que seja a atividade efetivamente exercida, nem discriminação por contrato. Uma empresa registrada como indústria pode atuar como revendedora no fornecimento específico, e o inverso também ocorre."],
-      "pop-do": ["Demanda e oferta por setor industrial",
-        "Demanda é o valor contratado pelo estado em cada setor. Oferta é a divisão desse valor entre fornecedores sediados na Bahia e fornecedores de outros estados. ",
-        "Demanda é a soma do campo <code>VALOR TOTAL</code> dos itens atribuídos a cada setor no ano. Oferta é a mesma soma, separada pelo campo <code>UF FORNECEDOR</code> entre Bahia e demais estados. A barra de demanda é proporcional ao maior setor da lista. A barra de oferta é a composição interna do setor, sempre igual a cem por cento.",
-        "Setores com demanda alta e barra de oferta predominantemente hachurada indicam procura pública existente sem produção local correspondente. Clique em um setor para ver os valores absolutos das duas parcelas.",
-        "A origem é medida pelo domicílio fiscal do fornecedor, o que não garante produção no estado. A parcela baiana é um teto para o conteúdo local."],
-      "pop-cnae": ["Setores industriais com maior valor contratado",
-        "Valor contratado por setor da indústria de transformação, com a participação de fornecedores baianos em cada um.",
-        "Apenas setores da seção C das contas nacionais são listados, em ordem decrescente de valor. A busca filtra por nome e as colunas podem ser reordenadas.",
-        "A coluna de fornecedor baiano indica dependência externa por setor. Valores abaixo de 25% aparecem destacados.",
-        "Comércio, construção e serviços não entram neste bloco, ainda que apareçam na base. O recorte é industrial por definição."],
-    };
-    function fichas() {
-      for (const id in FICHAS) {
-        const el = document.getElementById(id); if (!el) continue;
-        const f = FICHAS[id];
-        el.innerHTML = `<dl><dt>Indicador</dt><dd>${f[0]}</dd><dt>Definição</dt><dd>${f[1]}</dd>
+        /* ---------- barras agrupadas (duas séries em %) ---------- */
+        function agrupado(host, dados, legenda) {
+          const W = 720, rh = 40, gap = 10, ml = 176, mr = 8;
+          const H = dados.length * (rh + gap);
+          const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+          const max = Math.max(...dados.flatMap(d => [d.a, d.b]));
+          dados.forEach((d, i) => {
+            const y = i * (rh + gap);
+            const lb = svgEl("text", { x: 0, y: y + rh / 2 + 4, class: "sl" }); lb.textContent = d.k; s.appendChild(lb);
+            [[d.a, "var(--s1)", d.tipA], [d.b, "var(--s2)", d.tipB]].forEach((p, j) => {
+              const g = svgEl("g", { class: "mark" });
+              const w = (p[0] / max) * (W - ml - mr - 60);
+              g.appendChild(svgEl("rect", { x: ml, y: y + j * 17 + 2, width: Math.max(2, w), height: 14, rx: 4, fill: p[1] }));
+              const t = svgEl("text", { x: ml + w + 7, y: y + j * 17 + 13, class: "vl" }); t.textContent = pc(p[0], p[0] < 1 ? 2 : 1);
+              g.appendChild(t); on(g, p[2]); s.appendChild(g);
+            });
+          });
+          host.innerHTML = ""; host.appendChild(s);
+          const l = document.createElement("div"); l.className = "legend";
+          l.innerHTML = legenda.map(d => `<span><i style="background:${d.cor}"></i>${d.nome}</span>`).join("");
+          host.appendChild(l);
+        }
+
+        /* ---------- gráfico de rosca ---------- */
+        function rosca(host, partes, centro) {
+          const R = 70, r = 44, cx = 77, cy = 77;
+          const tot = partes.reduce((a, b) => a + b.v, 0) || 1;
+          const s = svgEl("svg", { viewBox: "0 0 154 154", role: "img" });
+          let ang = -Math.PI / 2;
+          partes.forEach(p => {
+            const frac = p.v / tot, da = frac * 2 * Math.PI, fim = ang + da;
+            const g = svgEl("g", { class: "mark" });
+            if (frac >= 0.9999) {
+              g.appendChild(svgEl("circle", { cx, cy, r: (R + r) / 2, fill: "none", stroke: p.cor, "stroke-width": R - r }));
+            } else {
+              const p1 = [cx + R * Math.cos(ang), cy + R * Math.sin(ang)], p2 = [cx + R * Math.cos(fim), cy + R * Math.sin(fim)];
+              const p3 = [cx + r * Math.cos(fim), cy + r * Math.sin(fim)], p4 = [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
+              const big = da > Math.PI ? 1 : 0;
+              g.appendChild(svgEl("path", {
+                d: `M${p1} A${R},${R} 0 ${big} 1 ${p2} L${p3} A${r},${r} 0 ${big} 0 ${p4} Z`,
+                fill: p.cor, stroke: "var(--surface)", "stroke-width": 2
+              }));
+            }
+            on(g, p.tip); s.appendChild(g); ang = fim;
+          });
+          const t1 = svgEl("text", {
+            x: cx, y: cy - 2, "text-anchor": "middle",
+            style: "font-family:'Poppins',sans-serif;font-size:20px;font-weight:600;fill:var(--ink)"
+          });
+          t1.textContent = centro[0]; s.appendChild(t1);
+          const t2 = svgEl("text", { x: cx, y: cy + 15, "text-anchor": "middle", style: "font-size:11px;fill:var(--ink-3)" });
+          t2.textContent = centro[1]; s.appendChild(t2);
+          host.innerHTML = "";
+          host.appendChild(s);
+          const l = document.createElement("div"); l.className = "dleg";
+          l.innerHTML = partes.map(p => `<div><i style="background:${p.cor}"></i><span>${p.nome}<br><b>${p.rot}</b> · ${pc(100 * p.v / tot, 1)}</span></div>`).join("");
+          host.appendChild(l);
+        }
+
+        /* ---------- faixa de cobertura da classificação ---------- */
+        function faixaCobertura(host, partes) {
+          const W = 720, H = 44, mr = 8;
+          const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+          let x = 0;
+          partes.forEach((p, j) => {
+            const w = (p.pct / 100) * (W - mr);
+            const g = svgEl("g", { class: "mark" });
+            g.appendChild(svgEl("rect", {
+              x: x, y: 0, width: Math.max(0, w - 2), height: 30,
+              rx: 4, fill: p.cor, stroke: p.vazio ? "var(--line)" : "none", "stroke-dasharray": p.vazio ? "4 3" : null
+            }));
+            if (w > 52) {
+              const t = svgEl("text", { x: x + 9, y: 20, class: "vl", fill: p.vazio ? "var(--ink-2)" : "#fff" });
+              t.textContent = pc(p.pct, 1); g.appendChild(t);
+            } else if (p.pct > 0) {
+              const t = svgEl("text", { x: x + w / 2, y: 43, class: "vl", "text-anchor": "middle", fill: p.cor });
+              t.textContent = pc(p.pct, 1); g.appendChild(t);
+              g.appendChild(svgEl("line", { x1: x + w / 2, y1: 31, x2: x + w / 2, y2: 34, stroke: p.cor, "stroke-width": 1.5 }));
+            }
+            on(g, p.tip); s.appendChild(g); x += w;
+          });
+          host.innerHTML = ""; host.appendChild(s);
+          const l = document.createElement("div"); l.className = "legend";
+          l.innerHTML = partes.map(p => `<span><i style="background:${p.vazio ? "transparent" : p.cor};${p.vazio ? "border:1px dashed var(--line)" : ""}"></i>${p.nome}</span>`).join("");
+          host.appendChild(l);
+        }
+
+        /* ---------- fichas metodológicas ---------- */
+        const FICHAS = {
+          "pop-volume": ["Valor contratado no ano",
+            "Soma do campo <code>VALOR TOTAL</code> de todos os itens registrados no SIMPAS com autorização emitida no ano.",
+            "Cada registro corresponde a um item de uma autorização de fornecimento de material (AFM) ou de prestação de serviço (APS).",
+            "A série oscila porque contratos plurianuais são registrados integralmente no ano de emissão. Comparações entre anos devem considerar essa característica.",
+            "Em valores reais, a série é deflacionada pelo IPCA para preços de dezembro de 2025."],
+          "pop-natureza": ["Natureza do item",
+            "Distribuição do valor contratado entre os campos <code>Material</code> e <code>Serviço</code> do SIMPAS.",
+            "Material corresponde a bens adquiridos por AFM. Serviço corresponde a contratações por APS.",
+            "A predominância de serviços reflete contratos continuados de terceirização, saúde e obras.",
+            "A natureza refere-se ao objeto contratado, não à atividade do fornecedor."],
+          "pop-local": ["Localização do fornecedor",
+            "Participação no valor contratado segundo o campo <code>UF FORNECEDOR</code>, que registra a unidade da federação de domicílio fiscal do contratado.",
+            "Bahia corresponde a UF igual a BA. Demais estados agregam as outras unidades.",
+            "O campo indica a sede do fornecedor, não a origem da produção. Uma distribuidora sediada na Bahia pode comercializar bem produzido fora do estado.",
+            "A compra estadual é centralizada, portanto o local de entrega não é usado como critério de origem."],
+          "pop-uf": ["Origem do gasto por unidade da federação",
+            "Valor contratado de fornecedores com sede em cada unidade da federação, no ano selecionado.",
+            "Cada quadrado representa um estado, posicionado de forma aproximada à geografia do país. A intensidade da cor segue quintis do valor contratado fora da Bahia.",
+            "Identifica para onde flui o gasto que não é atendido por fornecedores locais. A Bahia é destacada em cor própria por concentrar a maior parte do valor.",
+            "O cartograma preserva a leitura comparativa entre estados, mas não representa área nem contorno territorial."],
+          "pop-mod": ["Modalidade de contratação",
+            "Agrupamento das formas de contratação em três categorias, conforme o critério utilizado pela SAEB.",
+            "Licitação reúne licitação, licitação pela Lei 13.303/16, registro de preços, adesão a registro de preços e alteração de fornecedor. Contratação direta reúne dispensas, inexigibilidade, credenciamento, comparação de preço e seleções de consultoria. Outras formas reúnem termo aditivo, apostila e concurso.",
+            "O agrupamento foi validado contra o material oficial da SAEB de 2025 e reproduz os valores publicados.",
+            "Mede o grau de competição formal do gasto, não a sua eficiência."],
+          "pop-forma": ["Forma de contratação",
+            "Valor contratado por forma específica registrada no campo <code>FORMA DE CONTRATAÇÃO</code>.",
+            "Dez maiores formas no ano selecionado, em valor.",
+            "Registro de preços concentra o maior número de contratações, enquanto licitação e Lei 13.303/16 concentram o maior valor.",
+            "Termo aditivo e apostila são atos sobre contratos existentes, não novas contratações."],
+          "pop-faixa": ["Faixa de valor da contratação",
+            "Cada contratação é definida pelo documento de autorização (AFM ou APS). O valor da contratação é a soma dos seus itens.",
+            "As contratações são distribuídas em cinco faixas e comparadas em duas dimensões: participação no número de contratações e participação no valor.",
+            "A distância entre as duas barras mede a concentração financeira. Poucas contratações de grande porte respondem pela maior parte do gasto.",
+            "Indicador construído pelo NEI, não consta do material original da SAEB."],
+          "pop-conc": ["Concentração em fornecedores",
+            "Participação acumulada dos dez, cinquenta e cem maiores fornecedores no valor contratado do ano.",
+            "Fornecedores identificados por CNPJ. O índice HHI é a soma dos quadrados das participações percentuais individuais.",
+            "Quanto maior a participação acumulada, maior a dependência do estado de um conjunto restrito de contratados.",
+            "O HHI aqui calculado refere-se ao mercado de fornecimento ao estado, não ao mercado setorial."],
+          "pop-org": ["Órgãos com maior demanda",
+            "Valor contratado por secretaria ou órgão demandante, no ano selecionado.",
+            "Agregação pelo campo <code>SECRETARIA</code> do SIMPAS. São exibidos os oito maiores em valor.",
+            "Identifica onde a política de compras tem maior alavancagem: poucos órgãos concentram a maior parte da demanda do estado.",
+            "O órgão demandante não coincide necessariamente com a unidade licitante, em especial nas compras centralizadas por registro de preços."],
+          "pop-cob": ["O que este bloco cobre",
+            "Parcela do valor contratado que entra no recorte industrial, segundo a visão selecionada.",
+            "Na visão de bens industriais, a classificação parte do objeto contratado, pelo mapeamento do NEI de famílias do catálogo SIMPAS. Como o mapeamento alcança apenas itens de material, o resultado equivale, na prática, à divisão entre material e serviço da base SIMPAS. Na visão de indústrias fornecedoras, a classificação parte do CNAE fiscal principal do fornecedor no cadastro de CNPJ da Receita Federal e alcança todo o valor contratado.",
+            "A premissa original do NEI foi tratar material como demanda por bens industriais. O cruzamento com a atividade declarada do fornecedor mostra que parte relevante desse material é faturada por empresas de comércio, e não por fabricantes.",
+            "As duas visões medem coisas diferentes: uma classifica o que é comprado, a outra classifica quem vende. Os percentuais não são intercambiáveis."],
+          "pop-din": ["Dinâmica dos setores industriais",
+            "Variação do valor contratado de cada setor industrial entre 2021, ano-base fixo, e o ano selecionado.",
+            "Calculada como valor do ano dividido pelo valor de 2021, menos um. Entram apenas setores com pelo menos R$ 500 mil contratados em 2021, para evitar variações distorcidas por base pequena.",
+            "Identifica onde a demanda pública industrial está crescendo e onde está recuando. Um crescimento muito elevado costuma refletir aquisição pontual de grande porte, e não tendência.",
+            "Variações calculadas sobre valores nominais ou reais, conforme o seletor do topo. O valor de 2021 aparece no detalhe de cada barra."],
+          "pop-itens": ["Itens por porte do fornecedor",
+            "Contagem de itens distintos do catálogo SIMPAS, identificados pelo campo <code>CÓDIGO</code>.",
+            "Pequenos negócios reúnem microempresa, empresa de pequeno porte e microempreendedor individual. Cada item é atribuído ao porte que respondeu pelo maior valor contratado daquele item no ano.",
+            "Mede alcance da política de fomento em variedade de itens, não em valor.",
+            "A regra de atribuição exclusiva pode divergir em algumas dezenas de itens do material da SAEB, que adota critério próprio de desempate."],
+          "pop-peqorig": ["Origem dos pequenos negócios",
+            "Distribuição dos itens contratados de ME, EPP e MEI entre fornecedores sediados na Bahia e em outros estados.",
+            "Mesma regra de atribuição exclusiva do indicador anterior.",
+            "Mede se o benefício do tratamento diferenciado permanece na economia baiana.",
+            "Refere-se a itens, não a valor contratado."],
+          "pop-prod": ["Produtos contratados",
+            "Valor contratado por produto, identificado pelo campo <code>Nome Básico</code> do catálogo SIMPAS.",
+            "O nome básico agrega as especificações de um mesmo produto. Um nome básico pode reunir dezenas de códigos de item com especificações distintas.",
+            "A tabela lista todos os produtos do ano em ordem decrescente de valor. A busca filtra por qualquer trecho do nome e as colunas podem ser reordenadas.",
+            "Produtos com poucos registros e valor alto costumam corresponder a contratações únicas de grande porte."],
+          "pop-ind": ["Recorte industrial do valor contratado",
+            "Valor contratado dentro do recorte industrial, segundo a visão selecionada no bloco.",
+            "Na visão de bens industriais, a classificação parte do objeto contratado, pelo mapeamento do NEI de famílias do catálogo SIMPAS para a CNAE 2.0, restrito a itens de material. Na visão de indústrias fornecedoras, parte do CNAE fiscal principal do fornecedor no cadastro de CNPJ da Receita Federal. ",
+            "A diferença entre as duas visões mede quanto da demanda industrial do estado é atendida por intermediários comerciais e não por fabricantes.",
+            "O CNAE fiscal principal é declarado pela própria empresa como a atividade de maior receita auferida ou esperada. Não há verificação de que seja a atividade efetivamente exercida, nem discriminação por contrato. Uma empresa registrada como indústria pode atuar como revendedora no fornecimento específico, e o inverso também ocorre."],
+          "pop-do": ["Demanda e oferta por setor industrial",
+            "Demanda é o valor contratado pelo estado em cada setor. Oferta é a divisão desse valor entre fornecedores sediados na Bahia e fornecedores de outros estados. ",
+            "Demanda é a soma do campo <code>VALOR TOTAL</code> dos itens atribuídos a cada setor no ano. Oferta é a mesma soma, separada pelo campo <code>UF FORNECEDOR</code> entre Bahia e demais estados. A barra de demanda é proporcional ao maior setor da lista. A barra de oferta é a composição interna do setor, sempre igual a cem por cento.",
+            "Setores com demanda alta e barra de oferta predominantemente hachurada indicam procura pública existente sem produção local correspondente. Clique em um setor para ver os valores absolutos das duas parcelas.",
+            "A origem é medida pelo domicílio fiscal do fornecedor, o que não garante produção no estado. A parcela baiana é um teto para o conteúdo local."],
+          "pop-cnae": ["Setores industriais com maior valor contratado",
+            "Valor contratado por setor da indústria de transformação, com a participação de fornecedores baianos em cada um.",
+            "Apenas setores da seção C das contas nacionais são listados, em ordem decrescente de valor. A busca filtra por nome e as colunas podem ser reordenadas.",
+            "A coluna de fornecedor baiano indica dependência externa por setor. Valores abaixo de 25% aparecem destacados.",
+            "Comércio, construção e serviços não entram neste bloco, ainda que apareçam na base. O recorte é industrial por definição."],
+        };
+        function fichas() {
+          for (const id in FICHAS) {
+            const el = document.getElementById(id); if (!el) continue;
+            const f = FICHAS[id];
+            el.innerHTML = `<dl><dt>Indicador</dt><dd>${f[0]}</dd><dt>Definição</dt><dd>${f[1]}</dd>
       <dt>Como foi calculado</dt><dd>${f[2]}</dd><dt>Como ler</dt><dd>${f[3]}</dd>
       <dt>Limitação</dt><dd>${f[4]}</dd></dl>`;
-      }
-    }
+          }
+        }
 
-    /* ---------- tabelas ---------- */
-    function tabelaProdutos() {
-      const d = D();
-      const q = semAcento(PROD_Q.trim());
-      let lista = d.produtos;
-      if (q) lista = lista.filter(p => semAcento(p.n).includes(q));
-      lista = [...lista].sort((a, b) => b[PROD_ORD] - a[PROD_ORD]);
-      const tot = lista.reduce((s, p) => s + p.v, 0);
-      $("#cnt-prod").innerHTML = `${nb(lista.length)} de ${nb(d.produtos.length)} produtos · ${cur(val(tot))}`;
-      const max = lista.length ? Math.max(...lista.map(p => p.v)) : 1;
-      const arw = c => PROD_ORD === c ? ' <span class="arw">▼</span>' : "";
-      $("#tb-prod").innerHTML =
-        `<thead><tr><th class="rk">#</th><th>Produto</th>
+        /* ---------- tabelas ---------- */
+        function tabelaProdutos() {
+          const d = D();
+          const q = semAcento(PROD_Q.trim());
+          let lista = d.produtos;
+          if (q) lista = lista.filter(p => semAcento(p.n).includes(q));
+          lista = [...lista].sort((a, b) => b[PROD_ORD] - a[PROD_ORD]);
+          const tot = lista.reduce((s, p) => s + p.v, 0);
+          $("#cnt-prod").innerHTML = `${nb(lista.length)} de ${nb(d.produtos.length)} produtos · ${cur(val(tot))}`;
+          const max = lista.length ? Math.max(...lista.map(p => p.v)) : 1;
+          const arw = c => PROD_ORD === c ? ' <span class="arw">▼</span>' : "";
+          $("#tb-prod").innerHTML =
+            `<thead><tr><th class="rk">#</th><th>Produto</th>
       <th class="n sortable" data-o="v">Valor${arw("v")}</th>
       <th class="n sortable" data-o="i">Itens${arw("i")}</th>
       <th class="n sortable" data-o="q">Registros${arw("q")}</th>
       <th class="n sortable" data-o="f">Forn.${arw("f")}</th></tr></thead><tbody>` +
-        lista.slice(0, 400).map((p, i) =>
-          `<tr><td class="rk">${i + 1}</td><td class="bar-cell"><i style="width:${100 * p.v / max}%"></i><span>${esc(p.n)}</span></td>
+            lista.slice(0, 400).map((p, i) =>
+              `<tr><td class="rk">${i + 1}</td><td class="bar-cell"><i style="width:${100 * p.v / max}%"></i><span>${esc(p.n)}</span></td>
        <td class="n">${brl(val(p.v))}</td><td class="n">${nb(p.i)}</td><td class="n">${nb(p.q)}</td><td class="n">${nb(p.f)}</td></tr>`).join("") +
-        `</tbody>`;
-      if (lista.length > 400)
-        $("#tb-prod").insertAdjacentHTML("beforeend",
-          `<tfoot><tr><td colspan="6" style="color:var(--ink-3);font-size:12.5px">Exibindo os 400 primeiros de ${nb(lista.length)} produtos. Use a busca para restringir a lista.</td></tr></tfoot>`);
-      $("#tb-prod").querySelectorAll("th.sortable").forEach(th =>
-        th.addEventListener("click", () => { PROD_ORD = th.dataset.o; tabelaProdutos(); }));
-      ajustaAltura($("#tb-prod"));
-    }
+            `</tbody>`;
+          if (lista.length > 400)
+            $("#tb-prod").insertAdjacentHTML("beforeend",
+              `<tfoot><tr><td colspan="6" style="color:var(--ink-3);font-size:12.5px">Exibindo os 400 primeiros de ${nb(lista.length)} produtos. Use a busca para restringir a lista.</td></tr></tfoot>`);
+          $("#tb-prod").querySelectorAll("th.sortable").forEach(th =>
+            th.addEventListener("click", () => { PROD_ORD = th.dataset.o; tabelaProdutos(); }));
+          ajustaAltura($("#tb-prod"));
+        }
 
-    /* mostra exatamente 15 linhas antes de acionar a rolagem */
-    function ajustaAltura(tabela) {
-      requestAnimationFrame(() => {
-        const box = tabela.closest(".scroll"); if (!box) return;
-        const linhas = tabela.querySelectorAll("tbody tr");
-        const head = tabela.querySelector("thead");
-        if (linhas.length <= 15) { box.style.maxHeight = ""; return; }
-        const topo = head ? head.getBoundingClientRect().height : 0;
-        const alt = linhas[15].getBoundingClientRect().top - linhas[0].getBoundingClientRect().top;
-        box.style.maxHeight = Math.round(topo + alt) + "px";
-      });
-    }
+        /* mostra exatamente 15 linhas antes de acionar a rolagem */
+        function ajustaAltura(tabela) {
+          requestAnimationFrame(() => {
+            const box = tabela.closest(".scroll"); if (!box) return;
+            const linhas = tabela.querySelectorAll("tbody tr");
+            const head = tabela.querySelector("thead");
+            if (linhas.length <= 15) { box.style.maxHeight = ""; return; }
+            const topo = head ? head.getBoundingClientRect().height : 0;
+            const alt = linhas[15].getBoundingClientRect().top - linhas[0].getBoundingClientRect().top;
+            box.style.maxHeight = Math.round(topo + alt) + "px";
+          });
+        }
 
-    function tabelaSetores() {
-      const v = B6();
-      const q = semAcento(SET_Q.trim());
-      let lista = v.setores.filter(s => s.ind);
-      if (q) lista = lista.filter(s => semAcento(s.nome).includes(q));
-      lista = [...lista].sort((a, b) => SET_ORD === "pct_ba" ? a.pct_ba - b.pct_ba : b[SET_ORD] - a[SET_ORD]);
-      const tot = lista.reduce((s, x) => s + x.valor, 0);
-      $("#cnt-set").innerHTML = `${nb(lista.length)} de ${nb(v.setores.filter(x => x.ind).length)} setores industriais · ${cur(val(tot))}`;
-      const max = lista.length ? Math.max(...lista.map(s => s.valor)) : 1;
-      const arw = c => SET_ORD === c ? ' <span class="arw">▼</span>' : "";
-      $("#tb-cnae").innerHTML =
-        `<thead><tr><th class="rk">#</th><th>Setor</th>
+        function tabelaSetores() {
+          const v = B6();
+          const q = semAcento(SET_Q.trim());
+          let lista = v.setores.filter(s => s.ind);
+          if (q) lista = lista.filter(s => semAcento(s.nome).includes(q));
+          lista = [...lista].sort((a, b) => SET_ORD === "pct_ba" ? a.pct_ba - b.pct_ba : b[SET_ORD] - a[SET_ORD]);
+          const tot = lista.reduce((s, x) => s + x.valor, 0);
+          $("#cnt-set").innerHTML = `${nb(lista.length)} de ${nb(v.setores.filter(x => x.ind).length)} setores industriais · ${cur(val(tot))}`;
+          const max = lista.length ? Math.max(...lista.map(s => s.valor)) : 1;
+          const arw = c => SET_ORD === c ? ' <span class="arw">▼</span>' : "";
+          $("#tb-cnae").innerHTML =
+            `<thead><tr><th class="rk">#</th><th>Setor</th>
       <th class="n sortable" data-o="valor">Valor${arw("valor")}</th>
       <th class="n sortable" data-o="pct">% total${arw("pct")}</th>
       <th class="n sortable" data-o="pct_ba">% fornecedores baianos${arw("pct_ba")}</th>
       <th class="n sortable" data-o="forn">Forn.${arw("forn")}</th></tr></thead><tbody>` +
-        lista.map((s, i) => {
-          const cor = s.pct_ba < 25 ? "var(--crit)" : s.pct_ba < 50 ? "var(--warn)" : "var(--good)";
-          return `<tr><td class="rk">${i + 1}</td>
+            lista.map((s, i) => {
+              const cor = s.pct_ba < 25 ? "var(--crit)" : s.pct_ba < 50 ? "var(--warn)" : "var(--good)";
+              return `<tr><td class="rk">${i + 1}</td>
         <td class="bar-cell"><i style="width:${100 * s.valor / max}%"></i><span>${esc(s.nome)}</span></td>
         <td class="n">${brl(val(s.valor))}</td><td class="n">${pc(s.pct, 2)}</td>
         <td class="n"><span style="color:${cor};font-weight:600">${pc(s.pct_ba, 1)}</span></td>
         <td class="n">${nb(s.forn)}</td></tr>`;
-        }).join("") + `</tbody>`;
-      $("#tb-cnae").querySelectorAll("th.sortable").forEach(th =>
-        th.addEventListener("click", () => { SET_ORD = th.dataset.o; tabelaSetores(); }));
-      ajustaAltura($("#tb-cnae"));
-    }
+            }).join("") + `</tbody>`;
+          $("#tb-cnae").querySelectorAll("th.sortable").forEach(th =>
+            th.addEventListener("click", () => { SET_ORD = th.dataset.o; tabelaSetores(); }));
+          ajustaAltura($("#tb-cnae"));
+        }
 
-    /* ---------- camada executiva ---------- */
-    const ORGAOS = {
-      "SECRETARIA DA ADMINISTRACAO": "Secretaria da Administração",
-      "SECRETARIA DA EDUCACAO": "Secretaria da Educação",
-      "SECRETARIA DA FAZENDA": "Secretaria da Fazenda",
-      "SECRETARIA DA SAUDE": "Secretaria da Saúde",
-      "SECRETARIA DA SEGURANCA PUBLICA": "Secretaria da Segurança Pública",
-      "SECRETARIA DO TRABALHO, EMPREGO, RENDA E ESPORTE": "Secretaria do Trabalho, Emprego, Renda e Esporte",
-      "SECRETARIA DE INFRAESTRUTURA HIDRICA E SANEAMENTO": "Secretaria de Infraestrutura Hídrica e Saneamento",
-      "SECRETARIA DE INFRA-ESTRUTURA": "Secretaria de Infraestrutura",
-      "SECRETARIA DE DESENVOLVIMENTO URBANO": "Secretaria de Desenvolvimento Urbano",
-      "SECRETARIA DE TURISMO": "Secretaria de Turismo",
-      "SECRETARIA DE ADMINISTRACAO PENITENCIARIA E RESSOCIALIZACAO": "Secretaria de Administração Penitenciária e Ressocialização",
-      "SECRETARIA DE COMUNICACAO SOCIAL": "Secretaria de Comunicação Social",
-      "SECRETARIA DE DESENVOLVIMENTO RURAL": "Secretaria de Desenvolvimento Rural",
-    };
-    function orgao(n) {
-      const limpo = String(n).replace(/^\d+\s*-\s*/, "").replace(/\s+/g, " ").trim();
-      return ORGAOS[limpo] || limpo;
-    }
-
-    const FRACOES = { 2: "metade", 3: "um terço", 4: "um quarto", 5: "um quinto", 6: "um sexto", 8: "um oitavo", 10: "um décimo" };
-    function fracao(pct) {
-      let melhor = null;
-      for (const n in FRACOES) {
-        const d = Math.abs(pct - 100 / n);
-        if (!melhor || d < melhor[0]) melhor = [d, FRACOES[n]];
-      }
-      if (melhor[0] <= 0.8) return melhor[1];
-      if (melhor[0] <= 2.0) return "cerca de " + melhor[1];
-      return pc(pct, 1);
-    }
-    const bilhoes = v => ("R$ " + (v / 1e9).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " bilhões");
-
-    function camadaExec() {
-      const d = D(), fam = d.b6.familia, ind5 = d.b6.cnae, i = ANOS.indexOf(ANO);
-      const ant = i > 0 ? DADOS.anos[ANOS[i - 1]] : null;
-      const tot = MODO === "real" ? d.total_real : d.total;
-      const totAnt = ant ? (MODO === "real" ? ant.total_real : ant.total) : null;
-      const varT = totAnt ? 100 * (tot / totAnt - 1) : null;
-      const ba = d.local.find(x => x.nome === "Bahia");
-      const gr = d.faixas[d.faixas.length - 1];
-      const ip = d.itens_porte, tp = ip["Pequenos negócios"] + ip["Demais empresas"];
-      const org = d.secretaria.slice(0, 8).reduce((a, b) => a + b.pct, 0);
-      const org1 = d.secretaria[0];
-      const ind = ind5.setores.filter(s => s.ind);
-      const fila = [...ind].sort((a, b) => (b.valor * (100 - b.pct_ba)) - (a.valor * (100 - a.pct_ba)));
-      const alvo = fila[0];
-
-      $("#ex-selo").textContent = `${nb(d.linhas)} registros de itens · ${nb(d.contratacoes)} contratações · base SIMPAS`;
-      $("#ex-titulo").textContent =
-        `O estado contratou ${bilhoes(tot)} em ${ANO}. ${fracao(ind5.pct).replace(/^./, c => c.toUpperCase())} foi contratado de indústrias fornecedoras e, desse montante, ${pc(ind5.pct_ba, 1)} vem de fornecedores da Bahia.`;
-      $("#ex-lead")?.remove();
-
-      const indBa = ind5.valor * ind5.pct_ba / 100;
-      $("#ex-numeros").innerHTML = [
-        [cur(tot), "Qual é o tamanho da demanda pública?",
-        `${nb(d.contratacoes)} contratações` + (varT === null ? "" : ` · ${(varT >= 0 ? "+" : "−") + pc(Math.abs(varT), 1)} sobre ${ANOS[i - 1]}`)],
-        [pc(ba.pct, 1), "Quanto fica na Bahia?", `${cur(val(ba.valor))} em fornecedores sediados no estado`],
-        [pc(ind5.pct, 1), "Quanto a indústria captura?",
-        `${cur(val(ind5.valor))} faturados por fornecedores com CNAE principal na indústria de transformação`],
-        [pc(ind5.pct_ba, 1), "Quanto dos produtos industriais comprados vem de fornecedores da Bahia?",
-        `${cur(val(indBa))} de ${cur(val(ind5.valor))} · equivale a ${pc(100 * indBa / d.total, 1)} do gasto total do estado`],
-      ].map(k => `<div><span class="v">${k[0]}</span><span class="k">${k[1]}</span><span class="d">${k[2]}</span></div>`).join("");
-
-      $("#ex-h3a")?.remove();
-      $("#ex-nota").textContent = MODO === "real"
-        ? "Valor contratado por exercício, em bilhões de reais de dezembro de 2025."
-        : "Valor contratado por exercício, em bilhões de reais correntes.";
-      serieExec($("#ex-grafico"));
-
-      $("#ex-achados").innerHTML = [
-        [pc(org, 0), `da demanda vem de oito órgãos, e a ${esc(orgao(org1.nome))} responde sozinha por ${pc(org1.pct, 1)}`],
-        [pc(100 * ip["Pequenos negócios"] / tp, 0), `dos itens são fornecidos por pequenos negócios, que ficam com ${pc(d.pct_peq, 1)} do valor: alcance amplo, peso financeiro pequeno`],
-        [pc(gr.pct, 0), `das compras saem de apenas ${nb(gr.n)} contratações acima de R$ 50 milhões, enquanto ${pc(d.faixas[0].pct_n, 0)} delas movimentam ${pc(d.faixas[0].pct, 1)} do gasto`],
-      ].map(a => `<li><b>${a[0]}</b><span>${a[1]}</span></li>`).join("");
-
-      const nom = s => esc(s.nome.replace(/^Fabricação de /, "").replace(/^./, c => c.toLowerCase()));
-      $("#ex-decisao").innerHTML = alvo
-        ? `<b>Onde agir primeiro.</b> ${esc(alvo.nome)} concentra ${cur(val(alvo.valor))} de demanda pública com apenas ${pc(alvo.pct_ba, 1)} de oferta baiana, o maior volume que hoje sai do estado.` +
-        (fila[1] ? ` Na sequência vêm ${nom(fila[1])}, com ${cur(val(fila[1].fora))} contratados fora da Bahia, e ${nom(fila[2])}, com ${cur(val(fila[2].fora))}.` : "") +
-        ` O ordenamento considera o volume que deixa o estado, não apenas o tamanho do setor.`
-        : "";
-    }
-
-    function serieExec(host) {
-      const W = 560, H = 214, mb = 34, mt = 26;
-      const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-      const vals = ANOS.map(a => MODO === "real" ? DADOS.anos[a].total_real : DADOS.anos[a].total);
-      const max = Math.max(...vals) * 1.06;
-      const bw = 76, passo = W / ANOS.length;
-      ANOS.forEach((a, i) => {
-        const v = vals[i], h = (v / max) * (H - mb - mt), x = i * passo + (passo - bw) / 2, y = H - mb - h;
-        const g = svgEl("g", { class: "mark" });
-        g.appendChild(svgEl("rect", { x, y, width: bw, height: h, class: a === ANO ? "barra" : "barra op" }));
-        const t = svgEl("text", { x: x + bw / 2, y: y - 8, "text-anchor": "middle", class: "val" });
-        t.textContent = (v / 1e9).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        g.appendChild(t);
-        const e = svgEl("text", {
-          x: x + bw / 2, y: H - mb + 19, "text-anchor": "middle", class: "eixo",
-          style: a === ANO ? "font-weight:700;fill:var(--tinta)" : ""
-        });
-        e.textContent = a; g.appendChild(e);
-        on(g, `<b>${a}</b><br>${brl(v)}<br>${nb(DADOS.anos[a].contratacoes)} contratações`);
-        s.appendChild(g);
-      });
-      host.innerHTML = ""; host.appendChild(s);
-    }
-
-    /* ---------- render ---------- */
-    function render() {
-      camadaExec();
-      const d = D(), i = ANOS.indexOf(ANO), ant = i > 0 ? DADOS.anos[ANOS[i - 1]] : null;
-      const tot = MODO === "real" ? d.total_real : d.total;
-      const totAnt = ant ? (MODO === "real" ? ant.total_real : ant.total) : null;
-      const varT = totAnt ? 100 * (tot / totAnt - 1) : null;
-      const sinal = v => (v >= 0 ? "+" : "−") + pc(Math.abs(v), 1);
-      const ser = d.tipo_item.find(x => x.nome === "Serviço"), mat = d.tipo_item.find(x => x.nome === "Material");
-      const ba = d.local.find(x => x.nome === "Bahia"), v6 = B6();
-
-      $("#kpis").innerHTML = [
-        [cur(tot), "Demanda pública estadual", varT === null ? `${nb(d.contratacoes)} contratações` :
-          `<span class="${varT >= 0 ? 'up' : 'down'}">${sinal(varT)}</span> sobre ${ANOS[i - 1]} · ${nb(d.contratacoes)} contratações`],
-        [pc(ba.pct, 1), "Retido na Bahia", `${cur(val(ba.valor))} contratados de fornecedores baianos`],
-        [pc(v6.pct, 1), FAM() ? "Demanda por bens industriais" : "Contratado de indústrias",
-        `${cur(val(v6.valor))} · ${FAM() ? "classificação pelo objeto contratado" : "classificação pelo fornecedor"}`],
-        [pc(v6.pct_ba, 1), FAM() ? "Fornecedor baiano na demanda industrial" : "Fornecedor baiano dentro da indústria",
-        `${cur(val(v6.valor * v6.pct_ba / 100))} de ${cur(val(v6.valor))} · visão ${rotVisao()}`],
-        [pc(d.concentracao.top10, 1), "Concentrado nos 10 maiores fornecedores", `sobre ${nb(d.fornecedores)} fornecedores contratados`],
-      ].map(k => `<div class="kpi"><div class="v">${k[0]}</div><div class="k">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
-
-      $("#sub1").textContent = MODO === "real"
-        ? "Valores deflacionados pelo IPCA a preços de dezembro de 2025"
-        : "Valores nominais, sem correção monetária";
-
-      colunas($("#ch-serie"), ANOS.map((a, j) => {
-        const v = MODO === "real" ? DADOS.anos[a].total_real : DADOS.anos[a].total;
-        const va = j > 0 ? (MODO === "real" ? DADOS.anos[ANOS[j - 1]].total_real : DADOS.anos[ANOS[j - 1]].total) : null;
-        const vr = va ? 100 * (v / va - 1) : null;
-        return {
-          k: a, v: v, cor: a === ANO ? "var(--s1)" : "var(--accent-soft)", sub: vr === null ? "" : sinal(vr),
-          tip: `<b>${a}</b><br>${brl(v)}<br>${nb(DADOS.anos[a].contratacoes)} contratações`
+        /* ---------- camada executiva ---------- */
+        const ORGAOS = {
+          "SECRETARIA DA ADMINISTRACAO": "Secretaria da Administração",
+          "SECRETARIA DA EDUCACAO": "Secretaria da Educação",
+          "SECRETARIA DA FAZENDA": "Secretaria da Fazenda",
+          "SECRETARIA DA SAUDE": "Secretaria da Saúde",
+          "SECRETARIA DA SEGURANCA PUBLICA": "Secretaria da Segurança Pública",
+          "SECRETARIA DO TRABALHO, EMPREGO, RENDA E ESPORTE": "Secretaria do Trabalho, Emprego, Renda e Esporte",
+          "SECRETARIA DE INFRAESTRUTURA HIDRICA E SANEAMENTO": "Secretaria de Infraestrutura Hídrica e Saneamento",
+          "SECRETARIA DE INFRA-ESTRUTURA": "Secretaria de Infraestrutura",
+          "SECRETARIA DE DESENVOLVIMENTO URBANO": "Secretaria de Desenvolvimento Urbano",
+          "SECRETARIA DE TURISMO": "Secretaria de Turismo",
+          "SECRETARIA DE ADMINISTRACAO PENITENCIARIA E RESSOCIALIZACAO": "Secretaria de Administração Penitenciária e Ressocialização",
+          "SECRETARIA DE COMUNICACAO SOCIAL": "Secretaria de Comunicação Social",
+          "SECRETARIA DE DESENVOLVIMENTO RURAL": "Secretaria de Desenvolvimento Rural",
         };
-      }), { fmt: v => cur(v) });
+        function orgao(n) {
+          const limpo = String(n).replace(/^\d+\s*-\s*/, "").replace(/\s+/g, " ").trim();
+          return ORGAOS[limpo] || limpo;
+        }
 
-      const corTipo = { "Serviço": "var(--s1)", "Material": "var(--s2)" };
-      const st = {}; ANOS.forEach(a => st[a] = DADOS.anos[a].tipo_item.filter(x => x.nome !== "nan")
-        .map(x => ({ ...x, cor: corTipo[x.nome] || "var(--s3)" })));
-      empilhado($("#ch-tipo"), st, [{ nome: "Serviço", cor: "var(--s1)" }, { nome: "Material", cor: "var(--s2)" }]);
+        const FRACOES = { 2: "metade", 3: "um terço", 4: "um quarto", 5: "um quinto", 6: "um sexto", 8: "um oitavo", 10: "um décimo" };
+        function fracao(pct) {
+          let melhor = null;
+          for (const n in FRACOES) {
+            const d = Math.abs(pct - 100 / n);
+            if (!melhor || d < melhor[0]) melhor = [d, FRACOES[n]];
+          }
+          if (melhor[0] <= 0.8) return melhor[1];
+          if (melhor[0] <= 2.0) return "cerca de " + melhor[1];
+          return pc(pct, 1);
+        }
+        const bilhoes = v => ("R$ " + (v / 1e9).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " bilhões");
 
-      const corLoc = { "Bahia": "var(--s1)", "Outros estados": "var(--s2)" };
-      const sl = {}; ANOS.forEach(a => sl[a] = DADOS.anos[a].local.map(x => ({ ...x, cor: corLoc[x.nome] })));
-      empilhado($("#ch-local"), sl, [{ nome: "Bahia", cor: "var(--s1)" }, { nome: "Outros estados", cor: "var(--s2)" }]);
+        function camadaExec() {
+          const d = D(), fam = d.b6.familia, ind5 = d.b6.cnae, i = ANOS.indexOf(ANO);
+          const ant = i > 0 ? DADOS.anos[ANOS[i - 1]] : null;
+          const tot = MODO === "real" ? d.total_real : d.total;
+          const totAnt = ant ? (MODO === "real" ? ant.total_real : ant.total) : null;
+          const varT = totAnt ? 100 * (tot / totAnt - 1) : null;
+          const ba = d.local.find(x => x.nome === "Bahia");
+          const gr = d.faixas[d.faixas.length - 1];
+          const ip = d.itens_porte, tp = ip["Pequenos negócios"] + ip["Demais empresas"];
+          const org = d.secretaria.slice(0, 8).reduce((a, b) => a + b.pct, 0);
+          const org1 = d.secretaria[0];
+          const ind = ind5.setores.filter(s => s.ind);
+          const fila = [...ind].sort((a, b) => (b.valor * (100 - b.pct_ba)) - (a.valor * (100 - a.pct_ba)));
+          const alvo = fila[0];
 
-      barras($("#ch-uf"), d.uf.filter(u => u.nome !== "BA").slice(0, 10).map(u => ({
-        k: u.nome, v: val(u.valor), cor: "var(--s2)",
-        tip: `<b>${u.nome}</b><br>${brl(val(u.valor))}<br>${pc(u.pct, 2)} do total contratado<br>${nb(u.forn)} fornecedores`
-      })),
-        { fmt: v => cur(v), ml: 44 });
+          $("#ex-selo").textContent = `${nb(d.linhas)} registros de itens · ${nb(d.contratacoes)} contratações · base SIMPAS`;
+          //$("#ex-titulo").textContent =
+          `O estado contratou ${bilhoes(tot)} em ${ANO}. ${fracao(fam.pct).replace(/^./, c => c.toUpperCase())} foi demanda por produtos industriais, e ${pc(fam.pct_ba, 1)} vem de fornecedores da Bahia.`;
+          $("#ex-lead")?.remove();
 
-      const corMod = { "Licitação": "var(--s1)", "Contratação direta": "var(--s2)", "Outras formas": "var(--s3)" };
-      const sm = {}; ANOS.forEach(a => sm[a] = ["Licitação", "Contratação direta", "Outras formas"]
-        .map(n => ({ ...DADOS.anos[a].modalidade.find(x => x.nome === n), cor: corMod[n] })));
-      empilhado($("#ch-mod"), sm, [{ nome: "Licitação", cor: "var(--s1)" }, { nome: "Contratação direta", cor: "var(--s2)" }, { nome: "Outras formas", cor: "var(--s3)" }]);
+          const indBa = ind5.valor * ind5.pct_ba / 100;
+          $("#ex-numeros").innerHTML = [
+            [cur(tot), "Qual é o tamanho da demanda pública?",
+            `${nb(d.contratacoes)} contratações` + (varT === null ? "" : ` · ${(varT >= 0 ? "+" : "−") + pc(Math.abs(varT), 1)} sobre ${ANOS[i - 1]}`)],
+            [pc(ba.pct, 1), "Quanto fica na Bahia?", `${cur(val(ba.valor))} em fornecedores sediados no estado`],
+            [pc(ind5.pct, 1), "Quanto a indústria captura?",
+            `${cur(val(ind5.valor))} faturados por fornecedores com CNAE principal na indústria de transformação`],
+            [pc(ind5.pct_ba, 1), "Quanto dos produtos industriais comprados vem de fornecedores da Bahia?",
+            `${cur(val(indBa))} de ${cur(val(ind5.valor))} · equivale a ${pc(100 * indBa / d.total, 1)} do gasto total do estado`],
+          ].map(k => `<div><span class="v">${k[0]}</span><span class="k">${k[1]}</span><span class="d">${k[2]}</span></div>`).join("");
 
-      barras($("#ch-forma"), d.forma.slice(0, 10).map(f => ({
-        k: f.nome.replace(/^[A-Z] - /, ""), v: val(f.valor), cor: "var(--s1)",
-        tip: `<b>${f.nome}</b><br>${brl(val(f.valor))}<br>${pc(f.pct, 2)} do total · ${nb(f.linhas)} registros`
-      })),
-        { fmt: v => cur(v), ml: 210 });
+          $("#ex-h3a")?.remove();
+          $("#ex-nota").textContent = MODO === "real"
+            ? "Valor contratado por exercício, em bilhões de reais de dezembro de 2025."
+            : "Valor contratado por exercício, em bilhões de reais correntes.";
+          serieExec($("#ex-grafico"));
 
-      agrupado($("#ch-faixa"), d.faixas.map(f => ({
-        k: f.nome, a: f.pct_n, b: f.pct,
-        tipA: `<b>${f.nome}</b><br>${nb(f.n)} contratações<br>${pc(f.pct_n, 2)} do total de contratações`,
-        tipB: `<b>${f.nome}</b><br>${brl(val(f.valor))}<br>${pc(f.pct, 2)} do valor contratado`
-      })),
-        [{ nome: "Participação nas contratações", cor: "var(--s1)" }, { nome: "Participação no valor", cor: "var(--s2)" }]);
+          $("#ex-achados").innerHTML = [
+            [pc(org, 0), `da demanda vem de oito órgãos, e a ${esc(orgao(org1.nome))} responde sozinha por ${pc(org1.pct, 1)}`],
+            [pc(100 * ip["Pequenos negócios"] / tp, 0), `dos itens são fornecidos por pequenos negócios, que ficam com ${pc(d.pct_peq, 1)} do valor: alcance amplo, peso financeiro pequeno`],
+            [pc(gr.pct, 0), `das compras saem de apenas ${nb(gr.n)} contratações acima de R$ 50 milhões, enquanto ${pc(d.faixas[0].pct_n, 0)} delas movimentam ${pc(d.faixas[0].pct, 1)} do gasto`],
+          ].map(a => `<li><b>${a[0]}</b><span>${a[1]}</span></li>`).join("");
 
-      const c = d.concentracao;
-      barras($("#ch-conc"), [{ k: "10 maiores", v: c.top10 }, { k: "50 maiores", v: c.top50 }, { k: "100 maiores", v: c.top100 }]
-        .map(x => ({ ...x, cor: "var(--s1)", tip: `<b>${x.k}</b><br>${pc(x.v, 2)} do valor contratado` })),
-        { fmt: v => pc(v, 1), ml: 104, W: 400, pad: 56 });
-      $("#ch-conc").insertAdjacentHTML("beforeend",
-        `<div class="note">Índice HHI de <b>${c.hhi.toLocaleString("pt-BR")}</b> pontos sobre ${nb(d.fornecedores)} fornecedores. Valores abaixo de 1.500 indicam mercado de fornecimento pouco concentrado.</div>`);
+          const nom = s => esc(s.nome.replace(/^Fabricação de /, "").replace(/^./, c => c.toLowerCase()));
+          $("#ex-decisao").innerHTML = alvo
+            ? `<b>Onde agir primeiro.</b> ${esc(alvo.nome)} concentra ${cur(val(alvo.valor))} de demanda pública com apenas ${pc(alvo.pct_ba, 1)} de oferta baiana, o maior volume que hoje sai do estado.` +
+            (fila[1] ? ` Na sequência vêm ${nom(fila[1])}, com ${cur(val(fila[1].fora))} contratados fora da Bahia, e ${nom(fila[2])}, com ${cur(val(fila[2].fora))}.` : "") +
+            ` O ordenamento considera o volume que deixa o estado, não apenas o tamanho do setor.`
+            : "";
+        }
 
-      barras($("#ch-org"), d.secretaria.slice(0, 8).map(o => ({
-        k: orgao(o.nome), v: val(o.valor), cor: "var(--s1)",
-        tip: `<b>${o.nome}</b><br>${brl(val(o.valor))}<br>${pc(o.pct, 2)} do valor contratado<br>${nb(o.linhas)} registros`
-      })),
-        { fmt: v => cur(v), ml: 178, W: 460, rh: 24, cut: 27, pad: 62 });
-      const somaOrg = d.secretaria.slice(0, 8).reduce((a, b) => a + b.pct, 0);
-      $("#ch-org").insertAdjacentHTML("beforeend",
-        `<div class="note">Os oito maiores órgãos concentram <b>${pc(somaOrg, 1)}</b> do valor contratado, sobre ${nb(d.secretarias)} órgãos compradores.</div>`);
+        function serieExec(host) {
+          const W = 560, H = 214, mb = 34, mt = 26;
+          const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+          const vals = ANOS.map(a => MODO === "real" ? DADOS.anos[a].total_real : DADOS.anos[a].total);
+          const max = Math.max(...vals) * 1.06;
+          const bw = 76, passo = W / ANOS.length;
+          ANOS.forEach((a, i) => {
+            const v = vals[i], h = (v / max) * (H - mb - mt), x = i * passo + (passo - bw) / 2, y = H - mb - h;
+            const g = svgEl("g", { class: "mark" });
+            g.appendChild(svgEl("rect", { x, y, width: bw, height: h, class: a === ANO ? "barra" : "barra op" }));
+            const t = svgEl("text", { x: x + bw / 2, y: y - 8, "text-anchor": "middle", class: "val" });
+            t.textContent = (v / 1e9).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            g.appendChild(t);
+            const e = svgEl("text", {
+              x: x + bw / 2, y: H - mb + 19, "text-anchor": "middle", class: "eixo",
+              style: a === ANO ? "font-weight:700;fill:var(--tinta)" : ""
+            });
+            e.textContent = a; g.appendChild(e);
+            on(g, `<b>${a}</b><br>${brl(v)}<br>${nb(DADOS.anos[a].contratacoes)} contratações`);
+            s.appendChild(g);
+          });
+          host.innerHTML = ""; host.appendChild(s);
+        }
 
-      const ord = ["1º", "2º", "3º", "4º", "5º", "6º", "7º", "8º", "9º", "10º"];
-      $("#tb-forn").innerHTML =
-        `<thead><tr><th class="rk">#</th><th>Fornecedor</th><th>UF</th><th class="n">Valor</th><th class="n">% do total</th></tr></thead><tbody>` +
-        d.top_fornecedores.map((f, i) => `<tr><td class="rk">${ord[i]}</td><td>${esc(f.nome)}</td><td>${esc(f.uf)}</td>
+        /* ---------- render ---------- */
+        function render() {
+          camadaExec();
+          const d = D(), i = ANOS.indexOf(ANO), ant = i > 0 ? DADOS.anos[ANOS[i - 1]] : null;
+          const tot = MODO === "real" ? d.total_real : d.total;
+          const totAnt = ant ? (MODO === "real" ? ant.total_real : ant.total) : null;
+          const varT = totAnt ? 100 * (tot / totAnt - 1) : null;
+          const sinal = v => (v >= 0 ? "+" : "−") + pc(Math.abs(v), 1);
+          const ser = d.tipo_item.find(x => x.nome === "Serviço"), mat = d.tipo_item.find(x => x.nome === "Material");
+          const ba = d.local.find(x => x.nome === "Bahia"), v6 = B6();
+
+          $("#kpis").innerHTML = [
+            [cur(tot), "Demanda pública estadual", varT === null ? `${nb(d.contratacoes)} contratações` :
+              `<span class="${varT >= 0 ? 'up' : 'down'}">${sinal(varT)}</span> sobre ${ANOS[i - 1]} · ${nb(d.contratacoes)} contratações`],
+            [pc(ba.pct, 1), "Retido na Bahia", `${cur(val(ba.valor))} contratados de fornecedores baianos`],
+            [pc(v6.pct, 1), FAM() ? "Demanda por bens industriais" : "Contratado de indústrias",
+            `${cur(val(v6.valor))} · ${FAM() ? "classificação pelo objeto contratado" : "classificação pelo fornecedor"}`],
+            [pc(v6.pct_ba, 1), FAM() ? "Fornecedor baiano na demanda industrial" : "Fornecedor baiano dentro da indústria",
+            `${cur(val(v6.valor * v6.pct_ba / 100))} de ${cur(val(v6.valor))} · visão ${rotVisao()}`],
+            [pc(d.concentracao.top10, 1), "Concentrado nos 10 maiores fornecedores", `sobre ${nb(d.fornecedores)} fornecedores contratados`],
+          ].map(k => `<div class="kpi"><div class="v">${k[0]}</div><div class="k">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
+
+          $("#sub1").textContent = MODO === "real"
+            ? "Valores deflacionados pelo IPCA a preços de dezembro de 2025"
+            : "Valores nominais, sem correção monetária";
+
+          colunas($("#ch-serie"), ANOS.map((a, j) => {
+            const v = MODO === "real" ? DADOS.anos[a].total_real : DADOS.anos[a].total;
+            const va = j > 0 ? (MODO === "real" ? DADOS.anos[ANOS[j - 1]].total_real : DADOS.anos[ANOS[j - 1]].total) : null;
+            const vr = va ? 100 * (v / va - 1) : null;
+            return {
+              k: a, v: v, cor: a === ANO ? "var(--s1)" : "var(--accent-soft)", sub: vr === null ? "" : sinal(vr),
+              tip: `<b>${a}</b><br>${brl(v)}<br>${nb(DADOS.anos[a].contratacoes)} contratações`
+            };
+          }), { fmt: v => cur(v) });
+
+          const corTipo = { "Serviço": "var(--s1)", "Material": "var(--s2)" };
+          const st = {}; ANOS.forEach(a => st[a] = DADOS.anos[a].tipo_item.filter(x => x.nome !== "nan")
+            .map(x => ({ ...x, cor: corTipo[x.nome] || "var(--s3)" })));
+          empilhado($("#ch-tipo"), st, [{ nome: "Serviço", cor: "var(--s1)" }, { nome: "Material", cor: "var(--s2)" }]);
+
+          const corLoc = { "Bahia": "var(--s1)", "Outros estados": "var(--s2)" };
+          const sl = {}; ANOS.forEach(a => sl[a] = DADOS.anos[a].local.map(x => ({ ...x, cor: corLoc[x.nome] })));
+          empilhado($("#ch-local"), sl, [{ nome: "Bahia", cor: "var(--s1)" }, { nome: "Outros estados", cor: "var(--s2)" }]);
+
+          barras($("#ch-uf"), d.uf.filter(u => u.nome !== "BA").slice(0, 10).map(u => ({
+            k: u.nome, v: val(u.valor), cor: "var(--s2)",
+            tip: `<b>${u.nome}</b><br>${brl(val(u.valor))}<br>${pc(u.pct, 2)} do total contratado<br>${nb(u.forn)} fornecedores`
+          })),
+            { fmt: v => cur(v), ml: 44 });
+
+          const corMod = { "Licitação": "var(--s1)", "Contratação direta": "var(--s2)", "Outras formas": "var(--s3)" };
+          const sm = {}; ANOS.forEach(a => sm[a] = ["Licitação", "Contratação direta", "Outras formas"]
+            .map(n => ({ ...DADOS.anos[a].modalidade.find(x => x.nome === n), cor: corMod[n] })));
+          empilhado($("#ch-mod"), sm, [{ nome: "Licitação", cor: "var(--s1)" }, { nome: "Contratação direta", cor: "var(--s2)" }, { nome: "Outras formas", cor: "var(--s3)" }]);
+
+          barras($("#ch-forma"), d.forma.slice(0, 10).map(f => ({
+            k: f.nome.replace(/^[A-Z] - /, ""), v: val(f.valor), cor: "var(--s1)",
+            tip: `<b>${f.nome}</b><br>${brl(val(f.valor))}<br>${pc(f.pct, 2)} do total · ${nb(f.linhas)} registros`
+          })),
+            { fmt: v => cur(v), ml: 210 });
+
+          agrupado($("#ch-faixa"), d.faixas.map(f => ({
+            k: f.nome, a: f.pct_n, b: f.pct,
+            tipA: `<b>${f.nome}</b><br>${nb(f.n)} contratações<br>${pc(f.pct_n, 2)} do total de contratações`,
+            tipB: `<b>${f.nome}</b><br>${brl(val(f.valor))}<br>${pc(f.pct, 2)} do valor contratado`
+          })),
+            [{ nome: "Participação nas contratações", cor: "var(--s1)" }, { nome: "Participação no valor", cor: "var(--s2)" }]);
+
+          const c = d.concentracao;
+          barras($("#ch-conc"), [{ k: "10 maiores", v: c.top10 }, { k: "50 maiores", v: c.top50 }, { k: "100 maiores", v: c.top100 }]
+            .map(x => ({ ...x, cor: "var(--s1)", tip: `<b>${x.k}</b><br>${pc(x.v, 2)} do valor contratado` })),
+            { fmt: v => pc(v, 1), ml: 104, W: 400, pad: 56 });
+          $("#ch-conc").insertAdjacentHTML("beforeend",
+            `<div class="note">Índice HHI de <b>${c.hhi.toLocaleString("pt-BR")}</b> pontos sobre ${nb(d.fornecedores)} fornecedores. Valores abaixo de 1.500 indicam mercado de fornecimento pouco concentrado.</div>`);
+
+          barras($("#ch-org"), d.secretaria.slice(0, 8).map(o => ({
+            k: orgao(o.nome), v: val(o.valor), cor: "var(--s1)",
+            tip: `<b>${o.nome}</b><br>${brl(val(o.valor))}<br>${pc(o.pct, 2)} do valor contratado<br>${nb(o.linhas)} registros`
+          })),
+            { fmt: v => cur(v), ml: 178, W: 460, rh: 24, cut: 27, pad: 62 });
+          const somaOrg = d.secretaria.slice(0, 8).reduce((a, b) => a + b.pct, 0);
+          $("#ch-org").insertAdjacentHTML("beforeend",
+            `<div class="note">Os oito maiores órgãos concentram <b>${pc(somaOrg, 1)}</b> do valor contratado, sobre ${nb(d.secretarias)} órgãos compradores.</div>`);
+
+          const ord = ["1º", "2º", "3º", "4º", "5º", "6º", "7º", "8º", "9º", "10º"];
+          $("#tb-forn").innerHTML =
+            `<thead><tr><th class="rk">#</th><th>Fornecedor</th><th>UF</th><th class="n">Valor</th><th class="n">% do total</th></tr></thead><tbody>` +
+            d.top_fornecedores.map((f, i) => `<tr><td class="rk">${ord[i]}</td><td>${esc(f.nome)}</td><td>${esc(f.uf)}</td>
       <td class="n">${brl(val(f.valor))}</td><td class="n">${pc(f.pct, 2)}</td></tr>`).join("") + `</tbody>`;
 
-      const ip = d.itens_porte, tp = ip["Pequenos negócios"] + ip["Demais empresas"];
-      rosca($("#ch-itens"), [
-        {
-          nome: "Pequenos negócios", v: ip["Pequenos negócios"], rot: nb(ip["Pequenos negócios"]) + " itens", cor: "var(--s1)",
-          tip: `<b>Pequenos negócios</b><br>${nb(ip["Pequenos negócios"])} itens<br>${pc(100 * ip["Pequenos negócios"] / tp, 1)} dos itens`
-        },
-        {
-          nome: "Demais empresas", v: ip["Demais empresas"], rot: nb(ip["Demais empresas"]) + " itens", cor: "var(--s2)",
-          tip: `<b>Demais empresas</b><br>${nb(ip["Demais empresas"])} itens<br>${pc(100 * ip["Demais empresas"] / tp, 1)} dos itens`
-        },
-      ], [pc(100 * ip["Pequenos negócios"] / tp, 0), "pequenos negócios"]);
-      $("#nota-itens").innerHTML = `Pequenos negócios respondem por <b>${pc(100 * ip["Pequenos negócios"] / tp, 1)}</b> dos itens e por <b>${pc(d.pct_peq, 1)}</b> do valor contratado.`;
+          const ip = d.itens_porte, tp = ip["Pequenos negócios"] + ip["Demais empresas"];
+          rosca($("#ch-itens"), [
+            {
+              nome: "Pequenos negócios", v: ip["Pequenos negócios"], rot: nb(ip["Pequenos negócios"]) + " itens", cor: "var(--s1)",
+              tip: `<b>Pequenos negócios</b><br>${nb(ip["Pequenos negócios"])} itens<br>${pc(100 * ip["Pequenos negócios"] / tp, 1)} dos itens`
+            },
+            {
+              nome: "Demais empresas", v: ip["Demais empresas"], rot: nb(ip["Demais empresas"]) + " itens", cor: "var(--s2)",
+              tip: `<b>Demais empresas</b><br>${nb(ip["Demais empresas"])} itens<br>${pc(100 * ip["Demais empresas"] / tp, 1)} dos itens`
+            },
+          ], [pc(100 * ip["Pequenos negócios"] / tp, 0), "pequenos negócios"]);
+          $("#nota-itens").innerHTML = `Pequenos negócios respondem por <b>${pc(100 * ip["Pequenos negócios"] / tp, 1)}</b> dos itens e por <b>${pc(d.pct_peq, 1)}</b> do valor contratado.`;
 
-      const po = d.itens_peq_origem, tpo = Object.values(po).reduce((a, b) => a + b, 0);
-      rosca($("#ch-peqorig"), [
-        {
-          nome: "Sediados na Bahia", v: po["Bahia"] || 0, rot: nb(po["Bahia"] || 0) + " itens", cor: "var(--s1)",
-          tip: `<b>Sediados na Bahia</b><br>${nb(po["Bahia"] || 0)} itens<br>${pc(100 * (po["Bahia"] || 0) / tpo, 1)} dos itens de pequenos negócios`
-        },
-        {
-          nome: "Outros estados", v: po["Outros estados"] || 0, rot: nb(po["Outros estados"] || 0) + " itens", cor: "var(--s2)",
-          tip: `<b>Outros estados</b><br>${nb(po["Outros estados"] || 0)} itens<br>${pc(100 * (po["Outros estados"] || 0) / tpo, 1)} dos itens de pequenos negócios`
-        },
-      ], [pc(100 * (po["Bahia"] || 0) / tpo, 0), "da Bahia"]);
+          const po = d.itens_peq_origem, tpo = Object.values(po).reduce((a, b) => a + b, 0);
+          rosca($("#ch-peqorig"), [
+            {
+              nome: "Sediados na Bahia", v: po["Bahia"] || 0, rot: nb(po["Bahia"] || 0) + " itens", cor: "var(--s1)",
+              tip: `<b>Sediados na Bahia</b><br>${nb(po["Bahia"] || 0)} itens<br>${pc(100 * (po["Bahia"] || 0) / tpo, 1)} dos itens de pequenos negócios`
+            },
+            {
+              nome: "Outros estados", v: po["Outros estados"] || 0, rot: nb(po["Outros estados"] || 0) + " itens", cor: "var(--s2)",
+              tip: `<b>Outros estados</b><br>${nb(po["Outros estados"] || 0)} itens<br>${pc(100 * (po["Outros estados"] || 0) / tpo, 1)} dos itens de pequenos negócios`
+            },
+          ], [pc(100 * (po["Bahia"] || 0) / tpo, 0), "da Bahia"]);
 
-      $("#sub-prod").textContent = `Todos os ${nb(d.produtos.length)} produtos do catálogo contratados em ${ANO}, do maior para o menor valor`;
-      tabelaProdutos();
+          $("#sub-prod").textContent = `Todos os ${nb(d.produtos.length)} produtos do catálogo contratados em ${ANO}, do maior para o menor valor`;
+          tabelaProdutos();
 
-      /* bloco 6 */
-      $("#tag-visao").textContent = VISAO === "familia" ? "demanda por bens industriais" : "contratado de indústrias";
-      $("#t-ind").textContent = rotTitulo();
-      $("#t-cob").textContent = FAM() ? "O que a demanda por bens industriais cobre" : "O que o contratado de indústrias cobre";
-      $("#sub-ind").textContent = VISAO === "familia"
-        ? "Classificação pelo objeto contratado, a partir da família do catálogo SIMPAS"
-        : "Classificação pela atividade principal do fornecedor no cadastro da Receita Federal";
-      /* cobertura da visão ativa */
-      const indp = v6.pct, outros = Math.max(0, 100 - indp);
-      const matv = (d.tipo_item.find(x => x.nome === "Material") || { valor: 0 }).valor;
-      const rotA = FAM() ? "Material tratado como bem industrial" : "Indústrias fornecedoras";
-      const rotB = FAM() ? "Serviços, obras e demais itens" : "Outros segmentos";
-      faixaCobertura($("#ch-cob"), [
-        {
-          nome: rotA, pct: indp, cor: "var(--s3)",
-          tip: `<b>${rotA}</b><br>${brl(val(v6.valor))}<br>${pc(indp, 2)} do valor contratado` +
-            (FAM() ? `<br>${pc(100 * v6.valor / matv, 1)} de todo o material contratado` : "")
-        },
-        {
-          nome: rotB, pct: outros, cor: "var(--s1)",
-          tip: `<b>${rotB}</b><br>${brl(val(d.total * outros / 100))}<br>${pc(outros, 2)} do valor contratado`
-        },
-      ]);
-      $("#sub-cob").textContent = VISAO === "familia"
-        ? "Classificação pelo objeto contratado, a partir da família do catálogo SIMPAS"
-        : "Classificação pela atividade principal do fornecedor no cadastro da Receita Federal";
-      $("#nota-cob").innerHTML = VISAO === "familia"
-        ? `Esta divisão é, na prática, material contra serviço. O mapeamento de famílias do catálogo alcança <b>${pc(100 * v6.valor / matv, 1)}</b> de todo o material contratado em ${ANO}, e os <b>${pc(indp, 1)}</b> aqui exibidos correspondem quase integralmente ao material. Os <b>${pc(outros, 1)}</b> restantes são serviços, obras, saúde e terceirização, que o catálogo não classifica em setor industrial. A premissa adotada foi tratar material como demanda por bens industriais. O cruzamento apresentado adiante mostra que essa premissa superestima o alcance industrial, porque parte relevante do material é faturada por empresas de comércio.`
-        : `As indústrias de transformação fornecedoras responderam por <b>${pc(indp, 1)}</b> do valor contratado em ${ANO}. Os demais <b>${pc(outros, 1)}</b> foram faturados por outros segmentos, com destaque para construção, saúde, comércio e serviços profissionais. Nesta visão a classificação usa o CNAE fiscal principal do CNPJ, declarado pela própria empresa como a atividade de maior receita, o que não garante que seja a atividade efetivamente exercida no contrato.`;
+          /* bloco 6 */
+          $("#tag-visao").textContent = VISAO === "familia" ? "demanda por bens industriais" : "contratado de indústrias";
+          $("#t-ind").textContent = rotTitulo();
+          $("#t-cob").textContent = FAM() ? "O que a demanda por bens industriais cobre" : "O que o contratado de indústrias cobre";
+          $("#sub-ind").textContent = VISAO === "familia"
+            ? "Classificação pelo objeto contratado, a partir da família do catálogo SIMPAS"
+            : "Classificação pela atividade principal do fornecedor no cadastro da Receita Federal";
+          /* cobertura da visão ativa */
+          const indp = v6.pct, outros = Math.max(0, 100 - indp);
+          const matv = (d.tipo_item.find(x => x.nome === "Material") || { valor: 0 }).valor;
+          const rotA = FAM() ? "Material tratado como bem industrial" : "Indústrias fornecedoras";
+          const rotB = FAM() ? "Serviços, obras e demais itens" : "Outros segmentos";
+          faixaCobertura($("#ch-cob"), [
+            {
+              nome: rotA, pct: indp, cor: "var(--s3)",
+              tip: `<b>${rotA}</b><br>${brl(val(v6.valor))}<br>${pc(indp, 2)} do valor contratado` +
+                (FAM() ? `<br>${pc(100 * v6.valor / matv, 1)} de todo o material contratado` : "")
+            },
+            {
+              nome: rotB, pct: outros, cor: "var(--s1)",
+              tip: `<b>${rotB}</b><br>${brl(val(d.total * outros / 100))}<br>${pc(outros, 2)} do valor contratado`
+            },
+          ]);
+          $("#sub-cob").textContent = VISAO === "familia"
+            ? "Classificação pelo objeto contratado, a partir da família do catálogo SIMPAS"
+            : "Classificação pela atividade principal do fornecedor no cadastro da Receita Federal";
+          $("#nota-cob").innerHTML = VISAO === "familia"
+            ? `Esta divisão é, na prática, material contra serviço. O mapeamento de famílias do catálogo alcança <b>${pc(100 * v6.valor / matv, 1)}</b> de todo o material contratado em ${ANO}, e os <b>${pc(indp, 1)}</b> aqui exibidos correspondem quase integralmente ao material. Os <b>${pc(outros, 1)}</b> restantes são serviços, obras, saúde e terceirização, que o catálogo não classifica em setor industrial. A premissa adotada foi tratar material como demanda por bens industriais. O cruzamento apresentado adiante mostra que essa premissa superestima o alcance industrial, porque parte relevante do material é faturada por empresas de comércio.`
+            : `As indústrias de transformação fornecedoras responderam por <b>${pc(indp, 1)}</b> do valor contratado em ${ANO}. Os demais <b>${pc(outros, 1)}</b> foram faturados por outros segmentos, com destaque para construção, saúde, comércio e serviços profissionais. Nesta visão a classificação usa o CNAE fiscal principal do CNPJ, declarado pela própria empresa como a atividade de maior receita, o que não garante que seja a atividade efetivamente exercida no contrato.`;
 
-      /* cruzamento entre as duas visões: apenas na ficha metodológica do indicador */
-      const cz = d.cruz;
-      const czCom = cz.vend.find(x => x.nome === "Comércio") || { valor: 0, pct: 0 };
-      const czInd = cz.vend.find(x => x.nome === "Indústria de transformação") || { valor: 0, pct: 0 };
-      FICHAS["pop-ind"] = ["Recorte industrial do valor contratado",
-        "Valor contratado dentro do recorte industrial, segundo a visão selecionada no bloco.",
-        "Na visão de bens industriais, a classificação parte do objeto contratado, pelo mapeamento do NEI de famílias do catálogo SIMPAS para a CNAE 2.0, restrito a itens de material. Na visão de indústrias fornecedoras, parte do CNAE fiscal principal do fornecedor no cadastro de CNPJ da Receita Federal, e alcança todo o valor contratado.",
-        `Por que as duas visões divergem em ${ANO}. Dos ${cur(val(cz.total))} comprados como produto industrial, ` +
-        `${pc(czCom.pct, 1)} foram faturados por empresas cuja atividade principal é comércio e ${pc(czInd.pct, 1)} por indústrias de transformação, ` +
-        `o equivalente a ${brl(val(czInd.valor))}. Esse valor não se confunde com os ${cur(val(d.b6.cnae.valor))} do indicador de indústrias fornecedoras: ` +
-        `aquele mede apenas a parte industrial de dentro do recorte de material, este mede tudo que foi contratado de indústrias em toda a base, material e serviço. ` +
-        `A parcela baiana do recorte de material é de ${pc(cz.ba_pct, 1)}, mas ${pc(100 * cz.ba_com / cz.ba_total, 1)} dela vem de empresas de comércio, ` +
-        `de modo que a indústria sediada na Bahia responde por ${brl(val(cz.ba_ind))}, ${pc(cz.ba_ind_pct_tot, 2)} de tudo que o estado contratou.`,
-        "O CNAE fiscal principal é declarado pela própria empresa como a atividade de maior receita auferida ou esperada. Não há verificação de que seja a atividade efetivamente exercida, nem discriminação por contrato. Uma empresa registrada como indústria pode atuar como revendedora no fornecimento específico, e o inverso também ocorre."];
-      fichas();
+          /* cruzamento entre as duas visões: apenas na ficha metodológica do indicador */
+          const cz = d.cruz;
+          const czCom = cz.vend.find(x => x.nome === "Comércio") || { valor: 0, pct: 0 };
+          const czInd = cz.vend.find(x => x.nome === "Indústria de transformação") || { valor: 0, pct: 0 };
+          FICHAS["pop-ind"] = ["Recorte industrial do valor contratado",
+            "Valor contratado dentro do recorte industrial, segundo a visão selecionada no bloco.",
+            "Na visão de bens industriais, a classificação parte do objeto contratado, pelo mapeamento do NEI de famílias do catálogo SIMPAS para a CNAE 2.0, restrito a itens de material. Na visão de indústrias fornecedoras, parte do CNAE fiscal principal do fornecedor no cadastro de CNPJ da Receita Federal, e alcança todo o valor contratado.",
+            `Por que as duas visões divergem em ${ANO}. Dos ${cur(val(cz.total))} comprados como produto industrial, ` +
+            `${pc(czCom.pct, 1)} foram faturados por empresas cuja atividade principal é comércio e ${pc(czInd.pct, 1)} por indústrias de transformação, ` +
+            `o equivalente a ${brl(val(czInd.valor))}. Esse valor não se confunde com os ${cur(val(d.b6.cnae.valor))} do indicador de indústrias fornecedoras: ` +
+            `aquele mede apenas a parte industrial de dentro do recorte de material, este mede tudo que foi contratado de indústrias em toda a base, material e serviço. ` +
+            `A parcela baiana do recorte de material é de ${pc(cz.ba_pct, 1)}, mas ${pc(100 * cz.ba_com / cz.ba_total, 1)} dela vem de empresas de comércio, ` +
+            `de modo que a indústria sediada na Bahia responde por ${brl(val(cz.ba_ind))}, ${pc(cz.ba_ind_pct_tot, 2)} de tudo que o estado contratou.`,
+            "O CNAE fiscal principal é declarado pela própria empresa como a atividade de maior receita auferida ou esperada. Não há verificação de que seja a atividade efetivamente exercida, nem discriminação por contrato. Uma empresa registrada como indústria pode atuar como revendedora no fornecimento específico, e o inverso também ocorre."];
+          fichas();
 
-      $("#kpi6").innerHTML = [
-        [cur(val(v6.valor)), rotTitulo()],
-        [pc(v6.pct, 1), "Participação no valor total contratado"],
-        [pc(v6.pct_ba, 1), "Fornecedores baianos nesse recorte"],
-      ].map(k => `<div><div class="v">${k[0]}</div><div class="k">${k[1]}</div></div>`).join("");
+          $("#kpi6").innerHTML = [
+            [cur(val(v6.valor)), rotTitulo()],
+            [pc(v6.pct, 1), "Participação no valor total contratado"],
+            [pc(v6.pct_ba, 1), "Fornecedores baianos nesse recorte"],
+          ].map(k => `<div><div class="v">${k[0]}</div><div class="k">${k[1]}</div></div>`).join("");
 
-      colunas($("#ch-ind"), ANOS.map(a => {
-        const x = DADOS.anos[a].b6[VISAO];
-        const v = MODO === "real" ? x.valor_real : x.valor;
-        return {
-          k: a, v: v, cor: a === ANO ? "var(--s3)" : "var(--accent-soft)", sub: pc(x.pct, 1),
-          tip: `<b>${a}</b><br>${brl(v)}<br>${pc(x.pct, 2)} do total contratado<br>${nb(x.itens)} itens · ${nb(x.fornecedores)} fornecedores<br>Fornecedores baianos: ${pc(x.pct_ba, 1)}`
-        };
-      }), { fmt: v => cur(v) });
+          colunas($("#ch-ind"), ANOS.map(a => {
+            const x = DADOS.anos[a].b6[VISAO];
+            const v = MODO === "real" ? x.valor_real : x.valor;
+            return {
+              k: a, v: v, cor: a === ANO ? "var(--s3)" : "var(--accent-soft)", sub: pc(x.pct, 1),
+              tip: `<b>${a}</b><br>${brl(v)}<br>${pc(x.pct, 2)} do total contratado<br>${nb(x.itens)} itens · ${nb(x.fornecedores)} fornecedores<br>Fornecedores baianos: ${pc(x.pct_ba, 1)}`
+            };
+          }), { fmt: v => cur(v) });
 
-      demandaOferta();
+          demandaOferta();
 
-      dinamica();
+          dinamica();
 
-      $("#sub-set").textContent = `Todos os ${nb(v6.setores.filter(x => x.ind).length)} setores da indústria de transformação presentes na visão ${rotVisao()}.`;
-      tabelaSetores();
+          $("#sub-set").textContent = `Todos os ${nb(v6.setores.filter(x => x.ind).length)} setores da indústria de transformação presentes na visão ${rotVisao()}.`;
+          tabelaSetores();
 
-      textos(d, ant, varT);
-    }
+          textos(d, ant, varT);
+        }
 
-    /* ---------- demanda e oferta por setor ---------- */
-    const BASE_DIN = "2021", PISO_DIN = 5e5;
-    let DO_Q = "", DO_SEL = null, DO_ORD = "valor", DO_DIR = -1;
-    function demandaOferta() {
-      const v6 = B6(), base = DADOS.anos[BASE_DIN].b6[VISAO].setores.filter(x => x.ind);
-      const mb = {}; base.forEach(x => mb[x.nome] = x.valor);
-      const fa = fx(ANO), fb = fx(BASE_DIN);
-      const q = semAcento(DO_Q.trim());
-      let todos = v6.setores.filter(s => s.ind).map(s => ({
-        ...s,
-        cresc: (ANO !== BASE_DIN && mb[s.nome] >= PISO_DIN) ? 100 * ((s.valor * fa) / (mb[s.nome] * fb) - 1) : null
-      }));
-      const total = todos.length;
-      let lista = q ? todos.filter(s => semAcento(s.nome).includes(q)) : todos;
-      lista = [...lista].sort((a, b) => {
-        if (DO_ORD === "nome") return DO_DIR * -1 * a.nome.localeCompare(b.nome, "pt-BR");
-        const va = a[DO_ORD] ?? -Infinity, vb = b[DO_ORD] ?? -Infinity;
-        return DO_DIR * (va - vb);
-      });
-      const max = lista.length ? Math.max(...lista.map(s => s.valor)) : 1;
-      $("#sub-do").textContent = `Setores industriais na visão ${rotVisao()}, em ${ANO}. A demanda mostra o valor contratado pelo estado, a oferta mostra a origem de quem fornece. Clique em um setor para ver os fornecedores.`;
-      $("#cnt-do").innerHTML = `${nb(lista.length)} de ${nb(total)} setores · ${cur(val(lista.reduce((a, b) => a + b.valor, 0)))}`;
-      const seta = (v, cls) => v === null ? `<span class="g" style="color:var(--ink-3)">n/d</span>`
-        : `<span class="${cls}" style="color:${v >= 0 ? "var(--good)" : "var(--crit)"}">${(v >= 0 ? "+" : "−") + pc(Math.abs(v), 0)}</span>`;
-      $("#ch-do").innerHTML = lista.map(s => `
+        /* ---------- demanda e oferta por setor ---------- */
+        const BASE_DIN = "2021", PISO_DIN = 5e5;
+        let DO_Q = "", DO_SEL = null, DO_ORD = "valor", DO_DIR = -1;
+        function demandaOferta() {
+          const v6 = B6(), base = DADOS.anos[BASE_DIN].b6[VISAO].setores.filter(x => x.ind);
+          const mb = {}; base.forEach(x => mb[x.nome] = x.valor);
+          const fa = fx(ANO), fb = fx(BASE_DIN);
+          const q = semAcento(DO_Q.trim());
+          let todos = v6.setores.filter(s => s.ind).map(s => ({
+            ...s,
+            cresc: (ANO !== BASE_DIN && mb[s.nome] >= PISO_DIN) ? 100 * ((s.valor * fa) / (mb[s.nome] * fb) - 1) : null
+          }));
+          const total = todos.length;
+          let lista = q ? todos.filter(s => semAcento(s.nome).includes(q)) : todos;
+          lista = [...lista].sort((a, b) => {
+            if (DO_ORD === "nome") return DO_DIR * -1 * a.nome.localeCompare(b.nome, "pt-BR");
+            const va = a[DO_ORD] ?? -Infinity, vb = b[DO_ORD] ?? -Infinity;
+            return DO_DIR * (va - vb);
+          });
+          const max = lista.length ? Math.max(...lista.map(s => s.valor)) : 1;
+          $("#sub-do").textContent = `Setores industriais na visão ${rotVisao()}, em ${ANO}. A demanda mostra o valor contratado pelo estado, a oferta mostra a origem de quem fornece. Clique em um setor para ver os fornecedores.`;
+          $("#cnt-do").innerHTML = `${nb(lista.length)} de ${nb(total)} setores · ${cur(val(lista.reduce((a, b) => a + b.valor, 0)))}`;
+          const seta = (v, cls) => v === null ? `<span class="g" style="color:var(--ink-3)">n/d</span>`
+            : `<span class="${cls}" style="color:${v >= 0 ? "var(--good)" : "var(--crit)"}">${(v >= 0 ? "+" : "−") + pc(Math.abs(v), 0)}</span>`;
+          $("#ch-do").innerHTML = lista.map(s => `
     <div class="do-row" data-n="${esc(s.nome)}" aria-selected="${DO_SEL === s.nome}" tabindex="0">
       <span class="nome">${esc(s.nome)}</span>
       <span class="bar"><i style="width:${100 * s.valor / max}%"></i></span>
@@ -2760,42 +2810,42 @@
       <span class="of"><i class="ba" style="width:${s.pct_ba}%"></i><i class="fo" style="width:${100 - s.pct_ba}%"></i></span>
       <span class="p" style="color:${s.pct_ba < 25 ? "var(--crit)" : s.pct_ba < 50 ? "var(--warn)" : "var(--good)"}">${pc(s.pct_ba, 0)} BA</span>
     </div>`).join("");
-      $("#ch-do").querySelectorAll(".do-row").forEach(r => {
-        const sel = () => { DO_SEL = DO_SEL === r.dataset.n ? null : r.dataset.n; demandaOferta(); };
-        r.addEventListener("click", sel);
-        r.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sel(); } });
-      });
-      document.querySelectorAll(".do-head .ord").forEach(h => {
-        const at = DO_ORD === h.dataset.o;
-        h.style.color = at ? "var(--accent)" : "";
-        h.querySelector(".sa")?.remove();
-        if (at) h.insertAdjacentHTML("beforeend", `<span class="sa">${DO_DIR === -1 ? "▼" : "▲"}</span>`);
-        if (!h.dataset.lig) {
-          h.dataset.lig = "1";
-          const ord = () => {
-            if (DO_ORD === h.dataset.o) DO_DIR *= -1; else { DO_ORD = h.dataset.o; DO_DIR = -1; }
-            demandaOferta();
-          };
-          h.addEventListener("click", ord);
-          h.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ord(); } });
+          $("#ch-do").querySelectorAll(".do-row").forEach(r => {
+            const sel = () => { DO_SEL = DO_SEL === r.dataset.n ? null : r.dataset.n; demandaOferta(); };
+            r.addEventListener("click", sel);
+            r.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sel(); } });
+          });
+          document.querySelectorAll(".do-head .ord").forEach(h => {
+            const at = DO_ORD === h.dataset.o;
+            h.style.color = at ? "var(--accent)" : "";
+            h.querySelector(".sa")?.remove();
+            if (at) h.insertAdjacentHTML("beforeend", `<span class="sa">${DO_DIR === -1 ? "▼" : "▲"}</span>`);
+            if (!h.dataset.lig) {
+              h.dataset.lig = "1";
+              const ord = () => {
+                if (DO_ORD === h.dataset.o) DO_DIR *= -1; else { DO_ORD = h.dataset.o; DO_DIR = -1; }
+                demandaOferta();
+              };
+              h.addEventListener("click", ord);
+              h.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ord(); } });
+            }
+          });
+          detalheSetor(todos.find(s => s.nome === DO_SEL));
+          texto6();
+          const box = $("#wrap-do");
+          requestAnimationFrame(() => {
+            const linhas = $("#ch-do").querySelectorAll(".do-row");
+            if (linhas.length <= 15) { box.style.maxHeight = ""; return; }
+            const alt = linhas[15].getBoundingClientRect().top - linhas[0].getBoundingClientRect().top;
+            box.style.maxHeight = Math.round(alt) + "px";
+          });
         }
-      });
-      detalheSetor(todos.find(s => s.nome === DO_SEL));
-      texto6();
-      const box = $("#wrap-do");
-      requestAnimationFrame(() => {
-        const linhas = $("#ch-do").querySelectorAll(".do-row");
-        if (linhas.length <= 15) { box.style.maxHeight = ""; return; }
-        const alt = linhas[15].getBoundingClientRect().top - linhas[0].getBoundingClientRect().top;
-        box.style.maxHeight = Math.round(alt) + "px";
-      });
-    }
 
-    function detalheSetor(s) {
-      const host = $("#det-do");
-      if (!s) { host.innerHTML = ""; return; }
-      const fo = s.forn_top || [];
-      host.innerHTML = `<div class="det-box">
+        function detalheSetor(s) {
+          const host = $("#det-do");
+          if (!s) { host.innerHTML = ""; return; }
+          const fo = s.forn_top || [];
+          host.innerHTML = `<div class="det-box">
     <span class="fecha" id="fecha-det">fechar</span>
     <h5>${esc(s.nome)}</h5>
     <p>Demanda de <b>${brl(val(s.valor))}</b> em ${ANO}, ${pc(s.pct, 2)} do valor total contratado pelo estado.
@@ -2809,269 +2859,269 @@
         <td>${esc(f.uf)}</td><td class="n">${brl(val(f.v))}</td><td class="n">${pc(f.p, 1)}</td></tr>`).join("")}</tbody>
       </table></div>` : `<p>Sem detalhamento de fornecedores para este setor.</p>`}
   </div>`;
-      $("#fecha-det").addEventListener("click", () => { DO_SEL = null; demandaOferta(); });
-    }
+          $("#fecha-det").addEventListener("click", () => { DO_SEL = null; demandaOferta(); });
+        }
 
-    /* ---------- dinâmica setorial, base fixa em 2021 ---------- */
-    function dinamica() {
-      const base = DADOS.anos[BASE_DIN].b6[VISAO].setores.filter(s => s.ind);
-      const atual = D().b6[VISAO].setores.filter(s => s.ind);
-      $("#sub-din").textContent = `Variação do valor contratado entre ${BASE_DIN} e ${ANO}, por setor, na visão ${rotVisao()}`;
-      if (ANO === BASE_DIN) {
-        $("#h-cresce").textContent = ""; $("#h-cai").textContent = "";
-        $("#ch-cresce").innerHTML = `<div class="note">${BASE_DIN} é o ano-base da comparação. Selecione outro ano no topo do painel para ver a variação.</div>`;
-        $("#ch-cai").innerHTML = "";
-        return;
-      }
-      const mb = {}; base.forEach(s => mb[s.nome] = s.valor);
-      const fa = fx(ANO), fb = fx(BASE_DIN);
-      const linhas = atual.filter(s => mb[s.nome] >= PISO_DIN).map(s => {
-        const v0 = mb[s.nome] * fb, v1 = s.valor * fa;
-        return { nome: s.nome, var: 100 * (v1 / v0 - 1), v0, v1 };
-      });
-      const sobe = linhas.filter(l => l.var > 0).sort((a, b) => b.var - a.var).slice(0, 10);
-      const cai = linhas.filter(l => l.var < 0).sort((a, b) => a.var - b.var).slice(0, 10);
-      $("#h-cresce").textContent = `Maiores crescimentos ${BASE_DIN} a ${ANO}`;
-      $("#h-cai").textContent = `Maiores quedas ${BASE_DIN} a ${ANO}`;
-      const tp = l => `<b>${l.nome}</b><br>${BASE_DIN}: ${cur(l.v0)}<br>${ANO}: ${cur(l.v1)}<br>Variação: ${(l.var >= 0 ? "+" : "−") + pc(Math.abs(l.var), 1)}`;
-      if (sobe.length)
-        barras($("#ch-cresce"), sobe.map(l => ({ k: l.nome, v: l.var, cor: "var(--s3)", tip: tp(l) })),
-          { fmt: v => "+" + pc(v, 0), ml: 186, W: 430, rh: 22, cut: 26, pad: 60 });
-      else $("#ch-cresce").innerHTML = `<div class="note">Nenhum setor industrial cresceu sobre ${BASE_DIN} com base mínima de ${cur(PISO_DIN)}.</div>`;
-      if (cai.length)
-        barras($("#ch-cai"), cai.map(l => ({ k: l.nome, v: Math.abs(l.var), cor: "var(--crit)", tip: tp(l) })),
-          { fmt: v => "−" + pc(v, 0), ml: 186, W: 430, rh: 22, cut: 26, pad: 60 });
-      else $("#ch-cai").innerHTML = `<div class="note">Nenhum setor industrial recuou sobre ${BASE_DIN} com base mínima de ${cur(PISO_DIN)}.</div>`;
-    }
+        /* ---------- dinâmica setorial, base fixa em 2021 ---------- */
+        function dinamica() {
+          const base = DADOS.anos[BASE_DIN].b6[VISAO].setores.filter(s => s.ind);
+          const atual = D().b6[VISAO].setores.filter(s => s.ind);
+          $("#sub-din").textContent = `Variação do valor contratado entre ${BASE_DIN} e ${ANO}, por setor, na visão ${rotVisao()}`;
+          if (ANO === BASE_DIN) {
+            $("#h-cresce").textContent = ""; $("#h-cai").textContent = "";
+            $("#ch-cresce").innerHTML = `<div class="note">${BASE_DIN} é o ano-base da comparação. Selecione outro ano no topo do painel para ver a variação.</div>`;
+            $("#ch-cai").innerHTML = "";
+            return;
+          }
+          const mb = {}; base.forEach(s => mb[s.nome] = s.valor);
+          const fa = fx(ANO), fb = fx(BASE_DIN);
+          const linhas = atual.filter(s => mb[s.nome] >= PISO_DIN).map(s => {
+            const v0 = mb[s.nome] * fb, v1 = s.valor * fa;
+            return { nome: s.nome, var: 100 * (v1 / v0 - 1), v0, v1 };
+          });
+          const sobe = linhas.filter(l => l.var > 0).sort((a, b) => b.var - a.var).slice(0, 10);
+          const cai = linhas.filter(l => l.var < 0).sort((a, b) => a.var - b.var).slice(0, 10);
+          $("#h-cresce").textContent = `Maiores crescimentos ${BASE_DIN} a ${ANO}`;
+          $("#h-cai").textContent = `Maiores quedas ${BASE_DIN} a ${ANO}`;
+          const tp = l => `<b>${l.nome}</b><br>${BASE_DIN}: ${cur(l.v0)}<br>${ANO}: ${cur(l.v1)}<br>Variação: ${(l.var >= 0 ? "+" : "−") + pc(Math.abs(l.var), 1)}`;
+          if (sobe.length)
+            barras($("#ch-cresce"), sobe.map(l => ({ k: l.nome, v: l.var, cor: "var(--s3)", tip: tp(l) })),
+              { fmt: v => "+" + pc(v, 0), ml: 186, W: 430, rh: 22, cut: 26, pad: 60 });
+          else $("#ch-cresce").innerHTML = `<div class="note">Nenhum setor industrial cresceu sobre ${BASE_DIN} com base mínima de ${cur(PISO_DIN)}.</div>`;
+          if (cai.length)
+            barras($("#ch-cai"), cai.map(l => ({ k: l.nome, v: Math.abs(l.var), cor: "var(--crit)", tip: tp(l) })),
+              { fmt: v => "−" + pc(v, 0), ml: 186, W: 430, rh: 22, cut: 26, pad: 60 });
+          else $("#ch-cai").innerHTML = `<div class="note">Nenhum setor industrial recuou sobre ${BASE_DIN} com base mínima de ${cur(PISO_DIN)}.</div>`;
+        }
 
-    /* ---------- leitura analítica ---------- */
-    function textos(d, ant, varT) {
-      const ba = d.local.find(x => x.nome === "Bahia"), fo = d.local.find(x => x.nome === "Outros estados");
-      const mat = d.tipo_item.find(x => x.nome === "Material"), ser = d.tipo_item.find(x => x.nome === "Serviço");
-      const lic = d.modalidade.find(x => x.nome === "Licitação"), dir = d.modalidade.find(x => x.nome === "Contratação direta");
-      const gr = d.faixas[d.faixas.length - 1], peq = d.faixas[0];
-      const ip = d.itens_porte, tp = ip["Pequenos negócios"] + ip["Demais empresas"];
-      const po = d.itens_peq_origem, tpo = Object.values(po).reduce((a, b) => a + b, 0);
-      const tot = MODO === "real" ? d.total_real : d.total;
-      const v6 = B6(), outra = d.b6[VISAO === "familia" ? "cnae" : "familia"];
-      const ufs = d.uf.filter(u => u.nome !== "BA").slice(0, 3);
-      const prod = d.produtos.slice(0, 3);
+        /* ---------- leitura analítica ---------- */
+        function textos(d, ant, varT) {
+          const ba = d.local.find(x => x.nome === "Bahia"), fo = d.local.find(x => x.nome === "Outros estados");
+          const mat = d.tipo_item.find(x => x.nome === "Material"), ser = d.tipo_item.find(x => x.nome === "Serviço");
+          const lic = d.modalidade.find(x => x.nome === "Licitação"), dir = d.modalidade.find(x => x.nome === "Contratação direta");
+          const gr = d.faixas[d.faixas.length - 1], peq = d.faixas[0];
+          const ip = d.itens_porte, tp = ip["Pequenos negócios"] + ip["Demais empresas"];
+          const po = d.itens_peq_origem, tpo = Object.values(po).reduce((a, b) => a + b, 0);
+          const tot = MODO === "real" ? d.total_real : d.total;
+          const v6 = B6(), outra = d.b6[VISAO === "familia" ? "cnae" : "familia"];
+          const ufs = d.uf.filter(u => u.nome !== "BA").slice(0, 3);
+          const prod = d.produtos.slice(0, 3);
 
-      $("#side1").innerHTML = `<h4>Leitura</h4>
+          $("#side1").innerHTML = `<h4>Leitura</h4>
     <p>O Estado da Bahia contratou <b>${cur(tot)}</b> em ${ANO}, distribuídos em <b>${nb(d.contratacoes)}</b> contratações e <b>${nb(d.itens)}</b> itens distintos do catálogo.</p>
     <p>${varT === null ? "Primeiro ano da série disponível." : `A variação sobre o ano anterior foi de <b>${(varT >= 0 ? "+" : "−") + pc(Math.abs(varT), 1)}</b> ${MODO === "real" ? "em termos reais" : "em termos nominais"}.`} A série oscila de forma pronunciada porque contratos plurianuais são registrados integralmente no ano de emissão da autorização.</p>
     <p>Serviços respondem por <b>${pc(ser.pct, 1)}</b> do valor e materiais por <b>${pc(mat.pct, 1)}</b>. A predominância de serviços delimita o alcance de qualquer política de compras voltada à produção industrial, que atua sobre a parcela de materiais.</p>`;
 
-      $("#side2").innerHTML = `<h4>Leitura</h4>
+          $("#side2").innerHTML = `<h4>Leitura</h4>
     <p>Fornecedores sediados na Bahia responderam por <b>${pc(ba.pct, 1)}</b> do valor contratado, o equivalente a <b>${cur(val(ba.valor))}</b>. Os demais estados absorveram <b>${cur(val(fo.valor))}</b>.</p>
     <p>Fora da Bahia, ${ufs.map(u => `<b>${u.nome}</b> (${cur(val(u.valor))})`).join(", ")} concentram o maior volume.</p>
     <p>O campo registra o domicílio fiscal do fornecedor, não o local de produção. A participação baiana é um teto para o conteúdo local efetivo, e não uma medida direta dele.</p>`;
 
-      $("#side3").innerHTML = `<h4>Leitura</h4>
+          $("#side3").innerHTML = `<h4>Leitura</h4>
     <p>Procedimentos licitatórios responderam por <b>${pc(lic.pct, 1)}</b> do valor contratado e a contratação direta por <b>${pc(dir.pct, 1)}</b>.</p>
     <p>O registro de preços é o instrumento de maior alcance operacional, com <b>${nb((d.forma.find(f => f.nome === "Registro de Preços") || { linhas: 0 }).linhas)}</b> registros no ano, ainda que o maior valor esteja concentrado nas licitações de grande porte.</p>
     <p>O agrupamento reproduz o critério oficial da SAEB e foi validado contra os valores publicados para 2025.</p>`;
 
-      $("#side4").innerHTML = `<h4>Leitura</h4>
+          $("#side4").innerHTML = `<h4>Leitura</h4>
     <p>As contratações acima de R$ 50 milhões representam <b>${pc(gr.pct_n, 2)}</b> do número de contratações e <b>${pc(gr.pct, 1)}</b> do valor. Na outra ponta, <b>${pc(peq.pct_n, 1)}</b> das contratações movimentam apenas <b>${pc(peq.pct, 1)}</b> do gasto.</p>
     <p>Os dez maiores fornecedores concentram <b>${pc(d.concentracao.top10, 1)}</b> do valor e os cem maiores, <b>${pc(d.concentracao.top100, 1)}</b>, sobre um universo de <b>${nb(d.fornecedores)}</b> fornecedores contratados.</p>
     <p>Do lado da demanda, os oito maiores órgãos respondem por <b>${pc(d.secretaria.slice(0, 8).reduce((a, b) => a + b.pct, 0), 1)}</b> do valor contratado, com destaque para <b>${esc(orgao(d.secretaria[0].nome))}</b> (${pc(d.secretaria[0].pct, 1)}).</p>`;
 
-      $("#side5").innerHTML = `<h4>Leitura</h4>
+          $("#side5").innerHTML = `<h4>Leitura</h4>
     <p>Dos <b>${nb(tp)}</b> itens contratados no ano, <b>${nb(ip["Pequenos negócios"])}</b> tiveram pequenos negócios como principais fornecedores, o equivalente a <b>${pc(100 * ip["Pequenos negócios"] / tp, 1)}</b> do total.</p>
     <p>A participação desses fornecedores no valor contratado é de <b>${pc(d.pct_peq, 1)}</b>. A distância entre as duas medidas indica que o tratamento diferenciado alcança variedade de itens, não volume financeiro.</p>
     <p>Entre os produtos do catálogo, ${prod.map(p => `<b>${esc(p.n.toLowerCase())}</b> (${cur(val(p.v))})`).join(", ")} lideram o valor contratado no ano.</p>`;
 
-      texto6();
-    }
+          texto6();
+        }
 
-    function texto6() {
-      const d = D(), v6 = B6(), ba = d.local.find(x => x.nome === "Bahia");
-      const outra = d.b6[VISAO === "familia" ? "cnae" : "familia"];
-      const ind = v6.setores.filter(s => s.ind);
-      const dep = ind.filter(s => s.pct_ba < 25).slice(0, 2);
-      const alvo = v6.setores.find(s => s.ind && s.nome === DO_SEL);
-      const det = alvo ? `<div class="sel-side"><b>${esc(alvo.nome)}</b><br>
+        function texto6() {
+          const d = D(), v6 = B6(), ba = d.local.find(x => x.nome === "Bahia");
+          const outra = d.b6[VISAO === "familia" ? "cnae" : "familia"];
+          const ind = v6.setores.filter(s => s.ind);
+          const dep = ind.filter(s => s.pct_ba < 25).slice(0, 2);
+          const alvo = v6.setores.find(s => s.ind && s.nome === DO_SEL);
+          const det = alvo ? `<div class="sel-side"><b>${esc(alvo.nome)}</b><br>
       Demanda de <b>${brl(val(alvo.valor))}</b> em ${ANO}, ${pc(alvo.pct, 2)} do valor total contratado.<br>
       Oferta: <b>${brl(val(alvo.ba))}</b> (${pc(alvo.pct_ba, 1)}) de fornecedores baianos e <b>${brl(val(alvo.fora))}</b> (${pc(100 - alvo.pct_ba, 1)}) de outros estados,
       entre <b>${nb(alvo.forn)}</b> fornecedores e <b>${nb(alvo.itens)}</b> itens.<br>
       ${alvo.pct_ba < 25 ? "Oferta local reduzida diante da demanda: setor candidato a adensamento produtivo."
-          : alvo.pct_ba < 50 ? "Oferta local parcial: metade ou mais da demanda é atendida de fora do estado."
-            : "Oferta majoritariamente local."}</div>` : "";
-      $("#side6").innerHTML = det + `<h4>Leitura</h4>
+              : alvo.pct_ba < 50 ? "Oferta local parcial: metade ou mais da demanda é atendida de fora do estado."
+                : "Oferta majoritariamente local."}</div>` : "";
+          $("#side6").innerHTML = det + `<h4>Leitura</h4>
     <p>Na visão <b>${VISAO === "familia" ? "demanda por bens industriais" : "contratado de indústrias"}</b>, o recorte industrial somou <b>${cur(val(v6.valor))}</b> em ${ANO}, <b>${pc(v6.pct, 1)}</b> do valor contratado, com <b>${pc(v6.pct_ba, 1)}</b> de participação de fornecedores baianos.</p>
     <p>Pela outra visão, o mesmo recorte industrial resulta em <b>${cur(val(outra.valor))}</b>, <b>${pc(outra.pct, 1)}</b> do total. ${VISAO === "familia"
-          ? "A diferença mostra quanto da demanda industrial do estado é atendida por distribuidores e atacadistas, cuja atividade principal registrada na Receita Federal é comércio, não indústria."
-          : "A diferença mostra que boa parte do que o estado compra como bem industrial é adquirida de empresas cuja atividade principal é comércio, e não fabricação."}</p>
+              ? "A diferença mostra quanto da demanda industrial do estado é atendida por distribuidores e atacadistas, cuja atividade principal registrada na Receita Federal é comércio, não indústria."
+              : "A diferença mostra que boa parte do que o estado compra como bem industrial é adquirida de empresas cuja atividade principal é comércio, e não fabricação."}</p>
     <p>${dinTexto()}</p>
     <p>${dep.length ? `Entre os setores industriais, ${dep.map(s => `<b>${s.nome.toLowerCase()}</b> (${pc(s.pct_ba, 1)} de fornecedores baianos)`).join(" e ")} combinam demanda relevante e oferta local reduzida, o que os qualifica para análise de adensamento produtivo.`
-          : "Os setores industriais listados apresentam participação baiana acima de 25%."}</p>`;
-    }
-
-    function dinTexto() {
-      if (ANO === BASE_DIN) return `A comparação de dinâmica usa ${BASE_DIN} como ano-base. Selecione outro ano para ver a variação setorial.`;
-      const base = DADOS.anos[BASE_DIN].b6[VISAO].setores.filter(s => s.ind);
-      const atual = D().b6[VISAO].setores.filter(s => s.ind);
-      const mb = {}; base.forEach(s => mb[s.nome] = s.valor);
-      const fa = fx(ANO), fb = fx(BASE_DIN);
-      const linhas = atual.filter(s => mb[s.nome] >= PISO_DIN)
-        .map(s => ({ nome: s.nome, var: 100 * ((s.valor * fa) / (mb[s.nome] * fb) - 1) }));
-      if (!linhas.length) return "Não há setores industriais com base suficiente para comparação com 2021.";
-      const sobe = [...linhas].sort((a, b) => b.var - a.var)[0];
-      const cai = [...linhas].sort((a, b) => a.var - b.var)[0];
-      const t0 = DADOS.anos[BASE_DIN].b6[VISAO].valor * fb, t1 = D().b6[VISAO].valor * fa;
-      const vg = 100 * (t1 / t0 - 1);
-      return `Entre ${BASE_DIN} e ${ANO}, as compras industriais do estado variaram <b>${(vg >= 0 ? "+" : "−") + pc(Math.abs(vg), 1)}</b>. ` +
-        `A maior expansão setorial foi em <b>${sobe.nome.toLowerCase()}</b> (${(sobe.var >= 0 ? "+" : "−") + pc(Math.abs(sobe.var), 0)}) e a maior retração em <b>${cai.nome.toLowerCase()}</b> (${(cai.var >= 0 ? "+" : "−") + pc(Math.abs(cai.var), 0)}).`;
-    }
-
-
-    /* ---------- exportação ---------- */
-    function csvLinha(campos) {
-      return campos.map(c => {
-        const t = String(c ?? "").replace(/"/g, '""');
-        return /[";\n]/.test(t) ? `"${t}"` : t;
-      }).join(";");
-    }
-    function exportarCSV() {
-      const d = D(), v6 = B6(), L = [];
-      const mv = v => (val(v)).toFixed(2).replace(".", ",");
-      L.push(csvLinha([`Perfil das compras públicas do Estado da Bahia · ano ${ANO} · valores ${MODO === "real" ? "reais a preços de dezembro de 2025" : "nominais"} · recorte de ${VISAO === "familia" ? "demanda por bens industriais" : "contratado de indústrias"}`]));
-      L.push(csvLinha(["Fonte: SIMPAS/SAEB. Elaboração: NEI SENAI CIMATEC."]), "");
-      const sec = (titulo, cab, linhas) => {
-        L.push(csvLinha([titulo])); L.push(csvLinha(cab));
-        linhas.forEach(x => L.push(csvLinha(x))); L.push("");
-      };
-      sec("Indicadores gerais", ["Indicador", "Valor"], [
-        ["Valor contratado", mv(d.total)], ["Contratações", d.contratacoes], ["Itens distintos", d.itens],
-        ["Fornecedores", d.fornecedores], ["Órgãos compradores", d.secretarias],
-        ["Participação de fornecedores baianos (%)", String(d.local.find(x => x.nome === "Bahia").pct).replace(".", ",")],
-        [(VISAO === "familia" ? "Demanda por bens industriais (%)" : "Contratado de indústrias (%)"), String(v6.pct).replace(".", ",")],
-        ["Concentração nos 10 maiores fornecedores (%)", String(d.concentracao.top10).replace(".", ",")],
-      ]);
-      sec("Natureza do item", ["Natureza", "Valor", "% do total"],
-        d.tipo_item.filter(x => x.nome !== "nan").map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ",")]));
-      sec("Localização do fornecedor", ["UF", "Valor", "% do total", "Fornecedores"],
-        d.uf.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","), x.forn]));
-      sec("Modalidade de contratação", ["Modalidade", "Valor", "% do total"],
-        d.modalidade.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ",")]));
-      sec("Forma de contratação", ["Forma", "Valor", "% do total", "Registros"],
-        d.forma.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","), x.linhas]));
-      sec("Faixa de valor da contratação", ["Faixa", "Contratações", "% das contratações", "Valor", "% do valor"],
-        d.faixas.map(x => [x.nome, x.n, String(x.pct_n).replace(".", ","), mv(x.valor), String(x.pct).replace(".", ",")]));
-      sec("Órgãos demandantes", ["Órgão", "Valor", "% do total", "Registros"],
-        d.secretaria.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","), x.linhas]));
-      sec("Dez maiores fornecedores", ["Posição", "Fornecedor", "UF", "CNAE principal", "Valor", "% do total"],
-        d.top_fornecedores.map((x, i) => [i + 1, x.nome, x.uf, x.cnae, mv(x.valor), String(x.pct).replace(".", ",")]));
-      sec("Produtos contratados", ["Produto", "Valor", "Itens", "Registros", "Fornecedores"],
-        d.produtos.map(x => [x.n, mv(x.v), x.i, x.q, x.f]));
-      sec(`Setores da indústria de transformação (${VISAO === "familia" ? "demanda por bens industriais" : "contratado de indústrias"})`,
-        ["Setor", "Valor", "% do total", "Valor de fornecedor baiano", "Valor de outros estados", "% fornecedores baianos", "Fornecedores", "Itens"],
-        v6.setores.filter(x => x.ind).map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","),
-        mv(x.ba), mv(x.fora), String(x.pct_ba).replace(".", ","), x.forn, x.itens]));
-      const txt = "\uFEFF" + L.join("\r\n");
-      const nome = `compras_publicas_ba_${ANO}_${VISAO}_${MODO}.csv`;
-      if (SAVE) {
-        SAVE.save({ filename: nome, data: txt }).catch(err => {
-          if (err && err.code === "declined") return;
-          avisoExport("Não foi possível salvar o arquivo nesta visualização. Abra o painel salvo no computador para exportar.");
-        });
-        return;
-      }
-      try {
-        const blob = new Blob([txt], { type: "text/csv;charset=utf-8" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob); a.download = nome;
-        document.body.appendChild(a); a.click();
-        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
-      } catch (e) {
-        avisoExport("Não foi possível salvar o arquivo nesta visualização. Abra o painel salvo no computador para exportar.");
-      }
-    }
-    let SAVE = null;
-    if (typeof claude !== "undefined" && claude && typeof claude.use === "function") {
-      claude.use("downloads").then(function (d) { SAVE = d; }).catch(function () { });
-    }
-    function avisoExport(msg) {
-      const el = document.createElement("div");
-      el.className = "note";
-      el.style.cssText = "position:fixed;right:18px;bottom:18px;z-index:95;max-width:320px;background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.2)";
-      el.textContent = msg; document.body.appendChild(el);
-      setTimeout(function () { el.remove(); }, 6000);
-    }
-
-    async function exportarBase() {
-      const b64 = BASE_BRUTA && BASE_BRUTA[ANO];
-      if (!b64) {
-        avisoExport("A base primária não está embutida nesta versão do painel. Use o arquivo salvo no computador.");
-        return;
-      }
-      if (typeof DecompressionStream === "undefined") {
-        avisoExport("Este navegador não consegue descompactar a base. Abra o painel no Chrome, Edge ou Firefox atualizados.");
-        return;
-      }
-      const bt = $("#btBase"), rot = bt.textContent;
-      bt.textContent = "Preparando…"; bt.disabled = true;
-      try {
-        const bin = atob(b64);
-        const arr = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-        const fluxo = new Blob([arr]).stream().pipeThrough(new DecompressionStream("gzip"));
-        const blob = await new Response(fluxo).blob();
-        const nome = `simpas_base_primaria_${ANO}.csv`;
-        if (SAVE) {
-          try {
-            await SAVE.save({ filename: nome, data: await blob.arrayBuffer() });
-          } catch (err) {
-            if (!err || err.code !== "declined")
-              avisoExport("Não foi possível salvar a base nesta visualização. Abra o painel salvo no computador.");
-          }
-        } else {
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob); a.download = nome;
-          document.body.appendChild(a); a.click();
-          setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2500);
+              : "Os setores industriais listados apresentam participação baiana acima de 25%."}</p>`;
         }
-      } catch (e) {
-        avisoExport("Não foi possível gerar a base primária neste navegador.");
-      } finally {
-        bt.textContent = rot; bt.disabled = false;
-      }
-    }
 
-    /* ---------- controles ---------- */
-    const segA = $("#segAno");
-    segA.innerHTML = ANOS.map(a => `<button data-a="${a}" aria-pressed="${a === ANO}">${a}</button>`).join("");
-    segA.addEventListener("click", e => {
-      const b = e.target.closest("button"); if (!b) return;
-      ANO = b.dataset.a;
-      segA.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.a === ANO));
-      render();
-    });
-    $("#segDefl").addEventListener("click", e => {
-      const b = e.target.closest("button"); if (!b) return;
-      MODO = b.dataset.v;
-      $("#segDefl").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === MODO));
-      render();
-    });
-    $("#segVisao").addEventListener("click", e => {
-      const b = e.target.closest("button"); if (!b) return;
-      VISAO = b.dataset.v; SET_Q = ""; $("#bs-set").value = "";
-      $("#segVisao").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === VISAO));
-      render();
-    });
-    $("#bs-prod").addEventListener("input", e => { PROD_Q = e.target.value; tabelaProdutos(); });
-    $("#bs-set").addEventListener("input", e => { SET_Q = e.target.value; tabelaSetores(); });
-    $("#bs-do").addEventListener("input", e => { DO_Q = e.target.value; demandaOferta(); });
-    $("#btCsv").addEventListener("click", exportarCSV);
-    $("#btBase").addEventListener("click", exportarBase);
-    if (!BASE_BRUTA || !Object.keys(BASE_BRUTA).length) $("#btBase").style.display = "none";
-    $("#btPdf").addEventListener("click", () => window.print());
-    $("#upd").innerHTML = (BASE_BRUTA && Object.keys(BASE_BRUTA).length
-      ? "<b>Exportação.</b> O botão Exportar base CSV entrega os dados primários do SIMPAS do ano selecionado, sem tratamento, com CNPJ, CNAE fiscal e razão social do fornecedor. O botão Exportar resultados entrega os agregados exibidos no painel.<br>"
-      : "");
-    fichas();
-    render();
+        function dinTexto() {
+          if (ANO === BASE_DIN) return `A comparação de dinâmica usa ${BASE_DIN} como ano-base. Selecione outro ano para ver a variação setorial.`;
+          const base = DADOS.anos[BASE_DIN].b6[VISAO].setores.filter(s => s.ind);
+          const atual = D().b6[VISAO].setores.filter(s => s.ind);
+          const mb = {}; base.forEach(s => mb[s.nome] = s.valor);
+          const fa = fx(ANO), fb = fx(BASE_DIN);
+          const linhas = atual.filter(s => mb[s.nome] >= PISO_DIN)
+            .map(s => ({ nome: s.nome, var: 100 * ((s.valor * fa) / (mb[s.nome] * fb) - 1) }));
+          if (!linhas.length) return "Não há setores industriais com base suficiente para comparação com 2021.";
+          const sobe = [...linhas].sort((a, b) => b.var - a.var)[0];
+          const cai = [...linhas].sort((a, b) => a.var - b.var)[0];
+          const t0 = DADOS.anos[BASE_DIN].b6[VISAO].valor * fb, t1 = D().b6[VISAO].valor * fa;
+          const vg = 100 * (t1 / t0 - 1);
+          return `Entre ${BASE_DIN} e ${ANO}, as compras industriais do estado variaram <b>${(vg >= 0 ? "+" : "−") + pc(Math.abs(vg), 1)}</b>. ` +
+            `A maior expansão setorial foi em <b>${sobe.nome.toLowerCase()}</b> (${(sobe.var >= 0 ? "+" : "−") + pc(Math.abs(sobe.var), 0)}) e a maior retração em <b>${cai.nome.toLowerCase()}</b> (${(cai.var >= 0 ? "+" : "−") + pc(Math.abs(cai.var), 0)}).`;
+        }
+
+
+        /* ---------- exportação ---------- */
+        function csvLinha(campos) {
+          return campos.map(c => {
+            const t = String(c ?? "").replace(/"/g, '""');
+            return /[";\n]/.test(t) ? `"${t}"` : t;
+          }).join(";");
+        }
+        function exportarCSV() {
+          const d = D(), v6 = B6(), L = [];
+          const mv = v => (val(v)).toFixed(2).replace(".", ",");
+          L.push(csvLinha([`Perfil das compras públicas do Estado da Bahia · ano ${ANO} · valores ${MODO === "real" ? "reais a preços de dezembro de 2025" : "nominais"} · recorte de ${VISAO === "familia" ? "demanda por bens industriais" : "contratado de indústrias"}`]));
+          L.push(csvLinha(["Fonte: SIMPAS/SAEB. Elaboração: NEI SENAI CIMATEC."]), "");
+          const sec = (titulo, cab, linhas) => {
+            L.push(csvLinha([titulo])); L.push(csvLinha(cab));
+            linhas.forEach(x => L.push(csvLinha(x))); L.push("");
+          };
+          sec("Indicadores gerais", ["Indicador", "Valor"], [
+            ["Valor contratado", mv(d.total)], ["Contratações", d.contratacoes], ["Itens distintos", d.itens],
+            ["Fornecedores", d.fornecedores], ["Órgãos compradores", d.secretarias],
+            ["Participação de fornecedores baianos (%)", String(d.local.find(x => x.nome === "Bahia").pct).replace(".", ",")],
+            [(VISAO === "familia" ? "Demanda por bens industriais (%)" : "Contratado de indústrias (%)"), String(v6.pct).replace(".", ",")],
+            ["Concentração nos 10 maiores fornecedores (%)", String(d.concentracao.top10).replace(".", ",")],
+          ]);
+          sec("Natureza do item", ["Natureza", "Valor", "% do total"],
+            d.tipo_item.filter(x => x.nome !== "nan").map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ",")]));
+          sec("Localização do fornecedor", ["UF", "Valor", "% do total", "Fornecedores"],
+            d.uf.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","), x.forn]));
+          sec("Modalidade de contratação", ["Modalidade", "Valor", "% do total"],
+            d.modalidade.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ",")]));
+          sec("Forma de contratação", ["Forma", "Valor", "% do total", "Registros"],
+            d.forma.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","), x.linhas]));
+          sec("Faixa de valor da contratação", ["Faixa", "Contratações", "% das contratações", "Valor", "% do valor"],
+            d.faixas.map(x => [x.nome, x.n, String(x.pct_n).replace(".", ","), mv(x.valor), String(x.pct).replace(".", ",")]));
+          sec("Órgãos demandantes", ["Órgão", "Valor", "% do total", "Registros"],
+            d.secretaria.map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","), x.linhas]));
+          sec("Dez maiores fornecedores", ["Posição", "Fornecedor", "UF", "CNAE principal", "Valor", "% do total"],
+            d.top_fornecedores.map((x, i) => [i + 1, x.nome, x.uf, x.cnae, mv(x.valor), String(x.pct).replace(".", ",")]));
+          sec("Produtos contratados", ["Produto", "Valor", "Itens", "Registros", "Fornecedores"],
+            d.produtos.map(x => [x.n, mv(x.v), x.i, x.q, x.f]));
+          sec(`Setores da indústria de transformação (${VISAO === "familia" ? "demanda por bens industriais" : "contratado de indústrias"})`,
+            ["Setor", "Valor", "% do total", "Valor de fornecedor baiano", "Valor de outros estados", "% fornecedores baianos", "Fornecedores", "Itens"],
+            v6.setores.filter(x => x.ind).map(x => [x.nome, mv(x.valor), String(x.pct).replace(".", ","),
+            mv(x.ba), mv(x.fora), String(x.pct_ba).replace(".", ","), x.forn, x.itens]));
+          const txt = "\uFEFF" + L.join("\r\n");
+          const nome = `compras_publicas_ba_${ANO}_${VISAO}_${MODO}.csv`;
+          if (SAVE) {
+            SAVE.save({ filename: nome, data: txt }).catch(err => {
+              if (err && err.code === "declined") return;
+              avisoExport("Não foi possível salvar o arquivo nesta visualização. Abra o painel salvo no computador para exportar.");
+            });
+            return;
+          }
+          try {
+            const blob = new Blob([txt], { type: "text/csv;charset=utf-8" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob); a.download = nome;
+            document.body.appendChild(a); a.click();
+            setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+          } catch (e) {
+            avisoExport("Não foi possível salvar o arquivo nesta visualização. Abra o painel salvo no computador para exportar.");
+          }
+        }
+        let SAVE = null;
+        if (typeof claude !== "undefined" && claude && typeof claude.use === "function") {
+          claude.use("downloads").then(function (d) { SAVE = d; }).catch(function () { });
+        }
+        function avisoExport(msg) {
+          const el = document.createElement("div");
+          el.className = "note";
+          el.style.cssText = "position:fixed;right:18px;bottom:18px;z-index:95;max-width:320px;background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.2)";
+          el.textContent = msg; document.body.appendChild(el);
+          setTimeout(function () { el.remove(); }, 6000);
+        }
+
+        async function exportarBase() {
+          const b64 = BASE_BRUTA && BASE_BRUTA[ANO];
+          if (!b64) {
+            avisoExport("A base primária não está embutida nesta versão do painel. Use o arquivo salvo no computador.");
+            return;
+          }
+          if (typeof DecompressionStream === "undefined") {
+            avisoExport("Este navegador não consegue descompactar a base. Abra o painel no Chrome, Edge ou Firefox atualizados.");
+            return;
+          }
+          const bt = $("#btBase"), rot = bt.textContent;
+          bt.textContent = "Preparando…"; bt.disabled = true;
+          try {
+            const bin = atob(b64);
+            const arr = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            const fluxo = new Blob([arr]).stream().pipeThrough(new DecompressionStream("gzip"));
+            const blob = await new Response(fluxo).blob();
+            const nome = `simpas_base_primaria_${ANO}.csv`;
+            if (SAVE) {
+              try {
+                await SAVE.save({ filename: nome, data: await blob.arrayBuffer() });
+              } catch (err) {
+                if (!err || err.code !== "declined")
+                  avisoExport("Não foi possível salvar a base nesta visualização. Abra o painel salvo no computador.");
+              }
+            } else {
+              const a = document.createElement("a");
+              a.href = URL.createObjectURL(blob); a.download = nome;
+              document.body.appendChild(a); a.click();
+              setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2500);
+            }
+          } catch (e) {
+            avisoExport("Não foi possível gerar a base primária neste navegador.");
+          } finally {
+            bt.textContent = rot; bt.disabled = false;
+          }
+        }
+
+        /* ---------- controles ---------- */
+        const segA = $("#segAno");
+        segA.innerHTML = ANOS.map(a => `<button data-a="${a}" aria-pressed="${a === ANO}">${a}</button>`).join("");
+        segA.addEventListener("click", e => {
+          const b = e.target.closest("button"); if (!b) return;
+          ANO = b.dataset.a;
+          segA.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.a === ANO));
+          render();
+        });
+        $("#segDefl").addEventListener("click", e => {
+          const b = e.target.closest("button"); if (!b) return;
+          MODO = b.dataset.v;
+          $("#segDefl").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === MODO));
+          render();
+        });
+        $("#segVisao").addEventListener("click", e => {
+          const b = e.target.closest("button"); if (!b) return;
+          VISAO = b.dataset.v; SET_Q = ""; $("#bs-set").value = "";
+          $("#segVisao").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === VISAO));
+          render();
+        });
+        $("#bs-prod").addEventListener("input", e => { PROD_Q = e.target.value; tabelaProdutos(); });
+        $("#bs-set").addEventListener("input", e => { SET_Q = e.target.value; tabelaSetores(); });
+        $("#bs-do").addEventListener("input", e => { DO_Q = e.target.value; demandaOferta(); });
+        $("#btCsv").addEventListener("click", exportarCSV);
+        $("#btBase").addEventListener("click", exportarBase);
+        if (!BASE_BRUTA || !Object.keys(BASE_BRUTA).length) $("#btBase").style.display = "none";
+        $("#btPdf").addEventListener("click", () => window.print());
+        $("#upd").innerHTML = (BASE_BRUTA && Object.keys(BASE_BRUTA).length
+          ? "<b>Exportação.</b> O botão Exportar base CSV entrega os dados primários do SIMPAS do ano selecionado, sem tratamento, com CNPJ, CNAE fiscal e razão social do fornecedor. O botão Exportar resultados entrega os agregados exibidos no painel.<br>"
+          : "");
+        fichas();
+        render();
 
   </script>
 
