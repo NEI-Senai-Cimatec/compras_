@@ -1536,6 +1536,30 @@ render();
   addEventListener("resize", seta);
   addEventListener("load", seta);
   seta();
+
+  /* sincronização com a página hospedeira (index.html) */
+  let pin = 0;
+  const reportaAltura = () => {
+    try {
+      window.parent.postMessage({
+        tipo: "perfilba-altura",
+        valor: Math.ceil(document.documentElement.scrollHeight)
+      }, "*");
+    } catch (e) {}
+  };
+  addEventListener("message", e => {
+    if (!e.data || e.data.tipo !== "perfilba-scroll") return;
+    /* deslocamento do header fixo acompanhando a rolagem externa */
+    const y = Math.max(0, -e.data.topoFrame);
+    if (y !== pin){
+      pin = y;
+      h.style.transform = y ? `translateY(${y}px)` : "";
+    }
+  });
+  addEventListener("resize", () => setTimeout(reportaAltura, 50));
+  addEventListener("load", () => setTimeout(reportaAltura, 250));
+  if (window.top === window) return; /* aberto em stand-alone */
+  setTimeout(reportaAltura, 300);
 })();
 
 </script>
